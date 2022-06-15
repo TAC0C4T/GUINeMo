@@ -4,7 +4,6 @@ import time
 import sys
 import subprocess
 import datetime
-#This 
 #This is the "outer file" for the whole automation process. This is the file you will execute.
 #First, you will need to place the parameters.txt file in your Code\E-Field_Coupling\ folder.
 #Second, check lines 30, 34, 40, and 63 of this file and change the folder locations to that of your own computer.
