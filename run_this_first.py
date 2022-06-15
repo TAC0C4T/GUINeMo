@@ -35,10 +35,17 @@ with open(filevar + r'\output_folder\checkfired.py','w') as file:
         file.writelines(filedata3)
 
 with open('automate_NeMo.bat','r') as file:
-        filedata3 = file.readlines()
-filedata3[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
+        filedata4 = file.readlines()
+filedata4[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
 with open(filevar + r'\output_folder\automate_NeMo.bat','w') as file:
-        file.writelines(filedata3)
+        file.writelines(filedata4)
 
-#Current as of 0915, 15 June
+os.remove(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m')#this line removes the original waveform
+
+with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki waveform
+    filedata5 = file.readlines()
+with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file
+    file.writelines(filedata5)
+    
+#Current as of 1315, 15 June
 #last modified by Ben Joray
