@@ -71,5 +71,5 @@ with open(filevar + r'\output_folder\results ' + current_time + '.txt','w') as f
         
         
         
-#Current as of: 0915, 15 June
+#Current as of: 1445, 15 June
 #Last modified by Ben Joray

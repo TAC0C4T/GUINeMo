@@ -1,6 +1,12 @@
 import os
+from tkinter import Tk
+from tkinter.filedialog import askdirectory
 
-filevar = r"C:\NemoTMS\NeMo-TMS-master\Models\cell_2"
+#below is the popup prompt
+filevar = askdirectory(title='Select the Cell Folder') #this variable MUST be the general cell folder, ie \Models\cell_2\
+#cannot be anything specific
+matlabvar = askdirectory(title='Select the Cell Folder') 
+#filevar = r"C:\NemoTMS\NeMo-TMS-master\Models\cell_2"
 path = os.path.join(filevar, r'output_folder')
 os.mkdir(path)
 
@@ -34,9 +40,15 @@ filedata3[17] = 'filevar = r"' + filevar + '"'
 with open(filevar + r'\output_folder\checkfired.py','w') as file:
         file.writelines(filedata3)
 
+
+var1 = 'matlab -batch "addpath('
+var2= '); couple_script('
+var3= ')"'
+
 with open('automate_NeMo.bat','r') as file:
         filedata4 = file.readlines()
 filedata4[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
+filedata4[14] = var1 + matlabvar + var2 + filevar + '/Code/E-Field_Coupling/parameters.txt' + var3#do NOT change the direction of these backslashes, trust me it is not wrong
 with open(filevar + r'\output_folder\automate_NeMo.bat','w') as file:
         file.writelines(filedata4)
 
@@ -47,5 +59,5 @@ with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki w
 with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file
     file.writelines(filedata5)
     
-#Current as of 1315, 15 June
+#Current as of 1445, 15 June
 #last modified by Ben Joray
