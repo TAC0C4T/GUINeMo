@@ -21,7 +21,8 @@ Once you select both of these, the script will automatically generate the folder
 
 Once you have done run_this_first.py, you will simply run checkfired.py everytime you want to get the firing threshold of the cell. You can edit the variables in the beginning of checkfired to modify the tolerance and range of scaling factor.
 
-###Important Notes
+### Important Notes
+
 THE LOW VALUE IN checkfired.py MUST BE BELOW THE FIRING THRESHOLD AND THE HIGH VALUE MUST BE ABOVE THE FIRING THRESHOLD. Error checking is a future task for this project and is currently not implemented. If, for instance, you set low to 500, but the threshold is actually 450, the file will run indefinitely until force quit.
 
 The parameters.txt file that the script copies to your Code/E-Field_Coupling folder is based off your previous simNIBS simulation output. If you rerun the simNIBS simulation using a different coil, location, or change parameters, you will need to navigate to Results/E-Field_Coupling and copy the parameters.txt located there and move it to Code/E-Field_Coupling.
