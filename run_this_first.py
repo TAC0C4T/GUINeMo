@@ -59,3 +59,9 @@ with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki w
     filedata5 = file.readlines()
 with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file:
     file.writelines(filedata5)
+
+
+
+subprocess.check_call(["attrib","+H","checkfired.py"])
+subprocess.check_call(["attrib","+H","automate_NeMo.bat"])
+subprocess.check_call(["attrib","+H","TMS_Waveform.m"])
