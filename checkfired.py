@@ -35,17 +35,17 @@ while ((low + tolerance <=scale_inject) or (high -tolerance >=scale_inject)):#wi
     stowrite = 'scale_E = ' + str(scale_inject) + ';\n'#this line and the next edit the list of the file
     filedata[17] = stowrite
     with open(filevar + r'\Code\E-Field_Coupling\parameters.txt','w') as file:#writes the new list to the same file
-        file.writelines(filedata)        
-    
-    
+        file.writelines(filedata)
+
+
     #below is calling the batch file to compile everything
-    subprocess.call([r'C:\Users\joray23\Desktop\automate_NeMo.bat'])
-    
-    
+    subprocess.call([filevar + '\output_folder\automate_NeMo.bat'])
+
+
     myfile = np.loadtxt(filevar + r'\Results\NEURON\voltage_trace.dat', skiprows = 0)#loading the voltage trace file to check if it fired
     #shape is in format row, col
     max_val = np.amax(myfile)
-   
+
     if (max_val > 0):#it fired
         high =scale_inject
         print("It fired")
@@ -58,18 +58,18 @@ while ((low + tolerance <=scale_inject) or (high -tolerance >=scale_inject)):#wi
         fired=0
         output.append('run ' + str(counter) + ' SF ' + str(scale_inject) + ' resulted in ' +str(fired) + '\n')#outputs results in a list to later write to file
         scale_inject = round(low + (high-low)/2)
-    
-    
+
+
     counter = counter+1
-    
+
 now = datetime.datetime.now()
 
 current_time = now.strftime("%m%d%H%M")
 
-with open(filevar + r'\output_folder\results ' + current_time + '.txt','w') as file:#writes our output list to a file 
+with open(filevar + r'\output_folder\results ' + current_time + '.txt','w') as file:#writes our output list to a file
         file.writelines(output)
-        
-        
-        
+
+
+
 #Current as of: 1445, 15 June
 #Last modified by Ben Joray
