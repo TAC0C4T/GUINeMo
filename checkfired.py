@@ -68,8 +68,3 @@ current_time = now.strftime("%m%d%H%M")
 
 with open(filevar + r'\output_folder\results ' + current_time + '.txt','w') as file:#writes our output list to a file
         file.writelines(output)
-
-
-
-#Current as of: 1445, 15 June
-#Last modified by Ben Joray

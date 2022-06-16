@@ -24,10 +24,3 @@ TMS_script.hoc
 timeout 100 > nul
 EXIT /b 0
 ::the above line of code exits the batch file, while still running the python file, with exit code 0 (no issues)
-
-
-
-
-::To run this file, double click
-::Current as of: 0915, 15 June
-::Last modified by Ben Joray
