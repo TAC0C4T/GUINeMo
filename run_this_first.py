@@ -5,7 +5,7 @@ from tkinter.filedialog import askdirectory
 #below is the popup prompt
 filevar = askdirectory(title='Select the Cell Folder') #this variable MUST be the general cell folder, ie \Models\cell_2\
 #cannot be anything specific
-matlabvar = askdirectory(title='Select the Cell Folder')
+matlabvar = askdirectory(title='Select the MATLAB Folder(belonging to SimNIBS)')
 #filevar = r"C:\NemoTMS\NeMo-TMS-master\Models\cell_2"
 path = os.path.join(filevar, r'output_folder')
 os.mkdir(path)
@@ -41,9 +41,10 @@ with open(filevar + r'\output_folder\checkfired.py','w') as file:
         file.writelines(filedata3)
 
 
-var1 = 'matlab -batch "addpath('
-var2= '); couple_script('
-var3= ')"'
+var1 = "matlab -batch \"addpath(\'"
+var2= "\'); couple_script(\'"
+var3= "\')\""
+
 
 with open('automate_NeMo.bat','r') as file:
         filedata4 = file.readlines()
@@ -56,5 +57,5 @@ os.remove(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m')#this line removes the 
 
 with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki waveform
     filedata5 = file.readlines()
-with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file
+with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file:
     file.writelines(filedata5)

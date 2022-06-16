@@ -13,7 +13,7 @@ cd C:\NemoTMS\NeMo-TMS-master\Models\cell_2\Code\E-Field_Coupling
 ::only do addpath to matlab folder if upon running couple_gui you get the error cannot find msh_load_gmsh4
 ::if you do not get that error, remove the addpath command but keep couple script
 matlab -batch "addpath('C:\NemoTMS\NeMo-TMS-master\matlab'); couple_script('C:\NemoTMS\NeMo-TMS-master\Models\cell_6\Code\E-Field_Coupling\parameters.txt')"
-::The MATLAB folder will be the SimNIBS matlab folder
+
 cd ..
 cd NEURON
 GUI_params.hoc

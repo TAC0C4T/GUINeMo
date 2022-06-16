@@ -39,7 +39,7 @@ while ((low + tolerance <=scale_inject) or (high -tolerance >=scale_inject)):#wi
 
 
     #below is calling the batch file to compile everything
-    subprocess.call([filevar + '\output_folder\automate_NeMo.bat'])
+    subprocess.call(['automate_NeMo.bat'])
 
 
     myfile = np.loadtxt(filevar + r'\Results\NEURON\voltage_trace.dat', skiprows = 0)#loading the voltage trace file to check if it fired
