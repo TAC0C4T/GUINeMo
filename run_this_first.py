@@ -20,8 +20,8 @@ with open(filevar + r'\Code\NEURON\GUI_params.hoc','w') as file:
 
 with open(filevar + r'\Code\NEURON\GUI.hoc','r') as file:
         filedata1 = file.readlines()
-filedata1[30] = 'save_params() \n'
-filedata1.insert(30, 'syn_freq = 3 \n')
+filedata1[30] = 'save_params() \n'#These are the preset vales in GUI params for a  realistic E-Field
+filedata1.insert(30, 'syn_freq = 3 \n')#if this file is run a second time, it will insert these again and it will likely be a problem
 filedata1.insert(31, 'syn_noise = 0.5 \n')
 filedata1.insert(32, 'syn_weight = 0.00 \n')
 filedata1.insert(33, 'syn_weight_sync = 0.00 \n')
@@ -60,8 +60,6 @@ with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki w
 with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file:
     file.writelines(filedata5)
 
-
-
+subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
+subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
 subprocess.check_call(["attrib","+H","checkfired.py"])
-subprocess.check_call(["attrib","+H","automate_NeMo.bat"])
-subprocess.check_call(["attrib","+H","TMS_Waveform.m"])
