@@ -1,13 +1,14 @@
-#BeNeMo
+# BeNeMo
 Ben's addition to NeMoTMS software for automation
 
 
 TUTORIAL
 ___________________________________________________________________
-##The short version
+## The short version
+
 Unzip the file you get when you download this repository, run the run_this_first.py file. The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder. After this, navigate to the cell folder and there will be a new folder created called output_folder. In this folder there will be automate_NeMo.bat and checkfired.py. Run checkfired.py, and upon completion, check the resultant text file in the same folder for consolidation of the results.
 ___________________________________________________________________
-##The longer explanation
+## The longer explanation
 
 There are 3 critical files in this repository: checkfired.py, run_this_first.py, and automate_NeMo.bat
 
