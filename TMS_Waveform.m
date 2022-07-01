@@ -37,7 +37,7 @@ end
 
 if TMS_type ~= 1 && TMS_type ~= 3 && TMS_type ~= 7  %If it's a custom pulse we need more input!
     prompt = {'\bfEnter the desired pulse width:',...
-    '\bf Currently Unused! Leave as 1:'};
+    '\bf another thing maybe?:'};
     dlgtitle = 'Custom Pulse Parameters';
     dims = [1 92];
     opts.Interpreter = 'tex';
@@ -110,10 +110,11 @@ elseif TMS_type == 5 %Generate a rectangular pulse!
     TMS_t =(0:dt:length(TMS_E)*dt-dt)';
 elseif TMS_type == 6 %Generate a boost pulse!
     %currently have 1.8 ms of pulse
-    %Pulse width is 0.8 natively
-
-    desiredPulseLength = desiredPulseWidth/0.8;
-    scalingFactor = round(360*0.005/desiredPulseLength);
+    %Pulse width is 0.125 natively
+    
+    %Because the original code I referenced based these waveforms off one
+    %rotation in degrees the math is a little unwieldy.
+    scalingFactor = 0.125/desiredPulseWidth;
 
     boostCurrent = zeros(round(360/scalingFactor),1);
 
@@ -131,7 +132,7 @@ elseif TMS_type == 6 %Generate a boost pulse!
         boostCurrent(i)=-sin(pi/2+pi/2*((scalingFactor*i)-200)/160);
     end
 
-    for i= secondBound+1:thirdBound
+    for i= secondBound+1:thirdBound %This is a catch for some edge cases where the thirdBound continues too far.
         if boostCurrent(i) > 0
             boostCurrent(i) = 0;
         end 
