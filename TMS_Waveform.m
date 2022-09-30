@@ -3,7 +3,7 @@ function TMS_Waveform()
 % NEURON simulation.
 
 % Receive TMS parameters
-TMS_type = menu('Choose TMS pulse type:','Provided Monophasic Pulse','Generate Custom Monophasic Pulse','Provided Biphasic Pulse','Generate Custom Biphasic Pulse','Generate Custom Rectangular Pulse','Generate Custom Boost Pulse','Load Pulse from File');
+TMS_type = menu('Choose TMS pulse type:','Provided Monophasic Pulse','Generate Custom Monophasic Pulse','Provided Biphasic Pulse','Generate Custom Biphasic Pulse','Generate Custom Rectangular Pulse','Generate Custom 1/9 Boost Pulse','Generate Custom 1/18 Boost Pulse','Load Pulse from File');
 STEP_type = menu('Choose step time (us) :','5','25 (Default)');
 
 %%
@@ -35,7 +35,7 @@ while 1
     end
 end
 
-if TMS_type ~= 1 && TMS_type ~= 3 && TMS_type ~= 7  %If it's a custom pulse we need more input!
+if TMS_type ~= 1 && TMS_type ~= 3 && TMS_type ~= 8  %If it's a custom pulse we need more input!
     prompt = {'\bfEnter the desired pulse width:',...
     '\bf another thing maybe?:'};
     dlgtitle = 'Custom Pulse Parameters';
@@ -70,6 +70,7 @@ end
 dt = 0.005;
 if TMS_type == 1
     load(['./original_waveforms' filesep 'TMS_mono.mat']);
+    
 elseif TMS_type == 2 %Generate a monophasic pulse!
     desiredPulseLength = desiredPulseWidth/0.1;
     scalingFactor = 360*0.005/desiredPulseLength;
@@ -90,14 +91,17 @@ elseif TMS_type == 2 %Generate a monophasic pulse!
     TMS_E = TMS_E/max(TMS_E); %normalizing results
 
     TMS_t = (0:dt:(length(TMS_E)*dt)-dt)';
+    
 elseif TMS_type == 3
     load(['./original_waveforms' filesep 'TMS_bi.mat']);
+    
 elseif TMS_type == 4 %Generate a biphasic pulse!
     pulseFrequency = 1/desiredPulseWidth/2;
     TMS_t = (0:dt:(desiredPulseWidth+dt)*2)';
     TMS_E = cos(2*pi*pulseFrequency*(TMS_t-dt));
     TMS_E(1) = 0;
     TMS_E(end) = 0;
+    
 elseif TMS_type == 5 %Generate a rectangular pulse!
     totalTime = 0.3; %Could also request totalTime from user to have a truely variable pulse!
 
@@ -108,7 +112,8 @@ elseif TMS_type == 5 %Generate a rectangular pulse!
     TMS_E((desiredPulseWidth/dt+2):end) = recoveryIntensity;
     TMS_E = [zeros(1,1); TMS_E; zeros(5,1)];
     TMS_t =(0:dt:length(TMS_E)*dt-dt)';
-elseif TMS_type == 6 %Generate a boost pulse!
+    
+elseif TMS_type == 6 %Generate a 1/9 boost pulse!
     %currently have 1.8 ms of pulse
     %Pulse width is 0.125 natively
     
@@ -120,31 +125,47 @@ elseif TMS_type == 6 %Generate a boost pulse!
 
     firstBound = round((160/360)*length(boostCurrent));
     secondBound = round((200/360)*length(boostCurrent));
-    thirdBound = length(boostCurrent);
+    thirdBound = length(boostCurrent);    
 
     for i=1:firstBound
-        boostCurrent(i)=sin(scalingFactor*(pi/2*(i)/160));
+        TMS_E(i)=pi/2/160*cos(scalingFactor*(pi/2*(i)/160));
     end
     for i=firstBound+1:secondBound
-        boostCurrent(i)=cos(pi*((scalingFactor*i)-160)/40); 
+        TMS_E(i)=-pi/40*sin(pi*((scalingFactor*i)-160)/40); 
     end   
     for i=secondBound+1:thirdBound
-        boostCurrent(i)=-sin(pi/2+pi/2*((scalingFactor*i)-200)/160);
+        TMS_E(i)=-pi/2/160*cos(pi/2+pi/2*((scalingFactor*i)-200)/160);
     end
-
-    for i= secondBound+1:thirdBound %This is a catch for some edge cases where the thirdBound continues too far.
-        if boostCurrent(i) > 0
-            boostCurrent(i) = 0;
-        end 
-    end
-
-    TMS_E = diff(boostCurrent);
-    TMS_E = -TMS_E./min(TMS_E);    %Normalizing result
-
+    
+    TMS_E = (-TMS_E./min(TMS_E))';    %Normalizing result
     TMS_t = (0:dt:(length(TMS_E)*dt)-dt)';
-elseif TMS_type == 7 %Request user file
+    
+elseif TMS_type == 7 %Generate a 1/18 boost pulse!
+    scalingFactor = 0.125/desiredPulseWidth;
+
+    boostCurrent = zeros(round(360/scalingFactor),1);
+
+    firstBound = round((180/360)*length(boostCurrent));
+    secondBound = round((200/360)*length(boostCurrent));
+    thirdBound = length(boostCurrent);   
+
+    for i=1:firstBound
+        TMS_E(i)=pi/2/160*cos(scalingFactor*(pi/2*(i)/180));
+    end
+    for i=firstBound+1:secondBound
+        TMS_E(i)=-pi/20*sin(pi*((scalingFactor*i)-180)/20); 
+    end   
+    for i=secondBound+1:thirdBound
+        TMS_E(i)=-pi/2/160*cos(pi/2+pi/2*((scalingFactor*i)-200)/180);
+    end
+    
+    TMS_E = (-TMS_E./min(TMS_E))';    %Normalizing result
+    TMS_t = (0:dt:(length(TMS_E)*dt)-dt)';
+    
+elseif TMS_type == 8 %Request user file
     [fileName, pathName] = uigetfile('.mat');
     load([pathName filesep fileName]);
+    
 end
 
 %% Generate pulse train
