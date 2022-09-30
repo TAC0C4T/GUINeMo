@@ -73,7 +73,7 @@ if TMS_type == 1
     
 elseif TMS_type == 2 %Generate a monophasic pulse!
     desiredPulseLength = desiredPulseWidth/0.1;
-    scalingFactor = 360*0.005/desiredPulseLength;
+    scalingFactor = 360*dt/desiredPulseLength;
 
     monoCurrent = zeros(round(360/scalingFactor),1);
     firstBound = round(50/scalingFactor);
