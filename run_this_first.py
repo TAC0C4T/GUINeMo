@@ -36,9 +36,11 @@ with open(filevar + r'\Code\E-Field_Coupling\parameters.txt','w') as file:
 
 with open('checkfired.py','r') as file:
         filedata3 = file.readlines()
-filedata3[17] = 'filevar = r"' + filevar + '"'
+filedata3[18] = 'filevar = r"' + filevar + '"'
 with open(filevar + r'\output_folder\checkfired.py','w') as file:
         file.writelines(filedata3)
+
+
 
 
 var1 = "matlab -batch \"addpath(\'"
@@ -59,6 +61,35 @@ with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki w
     filedata5 = file.readlines()
 with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file:
     file.writelines(filedata5)
+
+with open('automate_simNIBS.py','r') as file:
+        filedata6 = file.readlines()
+with open(filevar + r'\output_folder\automate_simNIBS.py','w') as file:
+        file.writelines(filedata6)
+
+with open('rmtree.py','r') as file:
+        filedata7 = file.readlines()
+with open(filevar + r'\output_folder\rmtree.py','w') as file:
+        file.writelines(filedata7)
+
+with open('Efield_SimNIBS.m','r') as file:
+        filedata8 = file.readlines()
+with open(filevar + r'\output_folder\Efield_SimNIBS.m','w') as file:
+        file.writelines(filedata8)
+
+with open('hocScript.bat','r') as file:
+        filedata9 = file.readlines()
+filedata9[5] = 'cd ' + filevar + r'\Code\Neuron'
+filedata4[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
+filedata4[11] = 'cd ' + filevar + r'\output_folder'
+with open(filevar + r'\output_folder\hocScript.bat','w') as file:
+        file.writelines(filedata9)
+
+with open('runAuto.bat','r') as file:
+        filedata10 = file.readlines()
+with open(filevar + r'\output_folder\runAuto.bat','w') as file:
+        file.writelines(filedata10)
+
 
 subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
 subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
