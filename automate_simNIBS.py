@@ -13,8 +13,11 @@ if os.path.exists('simNibsOut\\'):
     rmtree('simNibsOut\\')
 
 
-
+#change these
 coilPos = [-41.2, 71.4, 55.3]
+initialAngle = 0
+finalAngle = 360
+step = 15
 
 data = []
 
@@ -23,15 +26,15 @@ with open('output.csv', 'w', newline='') as csvfile:
     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
     writer.writeheader()
 
-    for a in range(0, 345, 15):
+    for a in range(initialAngle, finalAngle, step):
         print("Calculating Positions for angle " + str(a))
         rad = radians(a)
         dx = sin(rad)
         dy = cos(rad)
 
-        x = -41.2 + dx
-        y = 71.4 + dy
-        z = (-41.2 * (x + 41.2) + 71.4 * (y - 71.4)) / (-55.3) + 55.3
+        x = -coilPos[0] + dx
+        y = coilPos[1] + dy
+        z = (-coilPos[0] * (x + coilPos[0]) + coilPos[1] * (y - coilPos[1])) / (-coilPos[2]) + coilPos[2]
 
         coilDirRef = [x, y, z]
         print("Done!")
