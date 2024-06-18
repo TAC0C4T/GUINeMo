@@ -1,0 +1,20 @@
+% FEM mesh file name
+meshfile = 'ernie_TMS_1-0001_Magstim_70mm_Fig8_scalar.msh';
+% FEM mesh pathway
+meshpath = '..\..\output_folder\simNibsOut\';
+% neuron location
+nrnloc = [-46  45  38];
+% neuron depth
+nrndpth = 1;
+% neuron segment coordinates file name
+nrnfile = 'locs_all_seg.txt';
+% neuron segment coordinates pathway
+nrnpath = '..\..\Results\NEURON\locs\';
+% neuron axis
+nrnaxs = [1  0  0];
+% neuron desired oriention
+nrnori = [];
+% E-field scaling factor
+scale_E = 1;
+% results directory
+respath = '..\..\Results\E-field_Coupling';

@@ -1,11 +1,14 @@
 import os
 from tkinter import Tk
 from tkinter.filedialog import askdirectory
+import shutil
 
 #below is the popup prompt
 filevar = askdirectory(title='Select the Cell Folder') #this variable MUST be the general cell folder, ie \Models\cell_2\
 #cannot be anything specific
 matlabvar = askdirectory(title='Select the MATLAB Folder(belonging to SimNIBS)')
+
+ernievar = askdirectory(title='Select Ernie Folder')
 #filevar = r"C:\NemoTMS\NeMo-TMS-master\Models\cell_2"
 path = os.path.join(filevar, r'output_folder')
 os.mkdir(path)
@@ -80,8 +83,8 @@ with open(filevar + r'\output_folder\Efield_SimNIBS.m','w') as file:
 with open('hocScript.bat','r') as file:
         filedata9 = file.readlines()
 filedata9[5] = 'cd ' + filevar + r'\Code\Neuron'
-filedata4[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
-filedata4[11] = 'cd ' + filevar + r'\output_folder'
+filedata9[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
+filedata9[11] = 'cd ' + filevar + r'\output_folder'
 with open(filevar + r'\output_folder\hocScript.bat','w') as file:
         file.writelines(filedata9)
 
@@ -89,6 +92,12 @@ with open('runAuto.bat','r') as file:
         filedata10 = file.readlines()
 with open(filevar + r'\output_folder\runAuto.bat','w') as file:
         file.writelines(filedata10)
+
+shutil.copy('Magstim_70mm_Fig8.ccd', filevar + r'\output_folder')
+
+shutil.copytree(ernievar, filevar + r'\output_folder')
+
+shutil.copy('parameters.txt', filevar + r'\Code\E-Field_Coupling')
 
 
 subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
