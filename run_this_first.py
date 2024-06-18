@@ -32,14 +32,14 @@ filedata1.insert(34, 'tms_offset = 2.00 \n')
 with open(filevar + r'\Code\NEURON\GUI.hoc','w') as file:
        file.writelines(filedata1)
 
-with open(filevar + r'\Results\E-Field_Coupling\parameters.txt','r') as file:
+with open('parameters.txt','r') as file:
         filedata2 = file.readlines()
 with open(filevar + r'\Code\E-Field_Coupling\parameters.txt','w') as file:
        file.writelines(filedata2)
 
 with open('checkfired.py','r') as file:
         filedata3 = file.readlines()
-filedata3[18] = 'filevar = r"' + filevar + '"'
+filedata3[17] = '    filevar = r"' + filevar + '"\n'
 with open(filevar + r'\output_folder\checkfired.py','w') as file:
         file.writelines(filedata3)
 
@@ -95,7 +95,7 @@ with open(filevar + r'\output_folder\runAuto.bat','w') as file:
 
 shutil.copy('Magstim_70mm_Fig8.ccd', filevar + r'\output_folder')
 
-shutil.copytree(ernievar, filevar + r'\output_folder')
+shutil.copytree(ernievar, filevar + r'\output_folder\m2m_ernie')
 
 shutil.copy('parameters.txt', filevar + r'\Code\E-Field_Coupling')
 
