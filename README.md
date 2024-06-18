@@ -6,7 +6,7 @@ TUTORIAL
 ___________________________________________________________________
 ## The short version
 
-Unzip the file you get when you download this repository, run the run_this_first.py file. The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder. After this, navigate to the cell folder and there will be a new folder created called output_folder. In this folder there will be automate_NeMo.bat and checkfired.py. Run checkfired.py, and upon completion, check the resultant text file in the same folder for consolidation of the results.
+Unzip the file you get when you download this repository, run the run_this_first.py file. The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder, the third is the m2m_ernie folder. After this, navigate to the cell folder and there will be a new folder created called output_folder. run the tms waveform generation step as per the full tutorial for nemo, then run runAuto.bat. to change simulation parameters go to Code\tms_waveform\parameters.txt for neuron location and go to automate simnibs and change the coilPos list to change the coil position and the loop variables to change tested values.
 ___________________________________________________________________
 ## The longer explanation
 
