@@ -4,6 +4,7 @@ import os
 from checkfired import checkFired
 from rmtree import rmtree
 import csv
+import shutil
 
 
 if os.path.isfile('output.csv'):
@@ -11,6 +12,9 @@ if os.path.isfile('output.csv'):
 
 if os.path.exists('simNibsOut\\'):
     rmtree('simNibsOut\\')
+
+if not os.path.exists('simNibsPastOutputs'):
+    os.mkdir('simNibsPastOutputs')
 
 
 #change these
@@ -74,6 +78,11 @@ with open('output.csv', 'w', newline='') as csvfile:
         #os.remove('output.txt')
         print("Done!")
 
-        rmtree('simNibsOut')
+        outFolder = 'simNibsPastOutput' + str(a)
+
+        os.rename('simNibsOut', outFolder)
+        shutil.move('outFolder', 'simNibsPastOutputs')
+        
+
 
     #write_to_csv('output.csv', data)
