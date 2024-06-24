@@ -50,7 +50,7 @@ var1 = "matlab -batch \"addpath(\'"
 var2= "\'); couple_script(\'"
 var3= "\')\""
 
-
+# This is a mess of code it needs fixed at some point. changing file lines is not the right way to do this. code should be redone with arguments
 with open('automate_NeMo.bat','r') as file:
         filedata4 = file.readlines()
 filedata4[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
@@ -99,7 +99,7 @@ shutil.copytree(ernievar, filevar + r'\output_folder\m2m_ernie')
 
 shutil.copy('parameters.txt', filevar + r'\Code\E-Field_Coupling')
 
-
+# This code does not do anything currently and obfuscates the file structure. at some point these "hidden" files should be put into a subfolder for cleanliness instead
 subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
 subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
 subprocess.check_call(["attrib","+H","checkfired.py"])
