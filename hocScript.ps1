@@ -27,25 +27,25 @@ respath = '..\..\Results\E-field_Coupling';
 "@
 
 # Write content to parameters.txt
-Set-Content -Path "C:\NeMo-TMS-master\Models\15step2\Code\E-Field_Coupling\parameters.txt" -Value $content
+Set-Content -Path "..\Code\E-Field_Coupling\parameters.txt" -Value $content
 
 # Change drive to C:
-Set-Location -Path "C:\"
+#Set-Location -Path "C:\"
 
 # Change directory to NEURON folder
-Set-Location -Path "C:\NeMo-TMS-master\Models\15step2\Code\NEURON"
+Set-Location -Path "..\Code\NEURON"
 
 # Run nrniv with save_locations.hoc
 Start-Process -FilePath "nrniv" -ArgumentList "save_locations.hoc" -NoNewWindow -Wait
 
 # Change directory to E-Field_Coupling folder
-Set-Location -Path "C:\NeMo-TMS-master\Models\15step2\Code\E-Field_Coupling\"
+Set-Location -Path "..\E-Field_Coupling\"
 
 # Run MATLAB with batch script
 Start-Process -FilePath "matlab" -ArgumentList "-batch", "couple_script('parameters.txt')" -NoNewWindow -Wait
 
 # Change directory to output_folder
-Set-Location -Path "C:\NeMo-TMS-master\Models\15step2\output_folder"
+Set-Location -Path "..\..\output_folder"
 
 # Run MATLAB with Efield_SimNIBS function
 Start-Process -FilePath "matlab" -ArgumentList "-batch", "Efield_SimNIBS()" -NoNewWindow -Wait
