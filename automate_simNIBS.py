@@ -5,6 +5,9 @@ from checkfired import checkFired
 from rmtree import rmtree
 import csv
 import shutil
+import glob
+import sys
+import subprocess
 
 # Initializing variables
 # Angles in degrees
@@ -33,45 +36,58 @@ with open('output.csv', 'w', newline='') as csvfile:
 
     # Main loop
     for a in range(initialAngle, finalAngle, step):
-        
-        # Calculating direction reference coordinates
-        print("Calculating Positions for angle " + str(a))
-        rad = radians(a)
-        dx = sin(rad)
-        dy = cos(rad)
 
-        x = -coilPos[0] + dx
-        y = coilPos[1] + dy
-        z = (-coilPos[0] * (x + coilPos[0]) + coilPos[1] * (y - coilPos[1])) / (-coilPos[2]) + coilPos[2]
+        outFolder = 'simNibsPastOutput' + str(a)
+        trueOut = 'simNibsPastOutputs\\' + outFolder
 
-        coilDirRef = [x, y, z]
-        print("Done!")
+        # Seeing if output has been created in previous run to save a sweet sweet 60 seconds or so every iteration
+        # i promise it adds up
+        if os.path.exists(trueOut):
+            print("Found pre-existing mesh at " + trueOut)
+            meshpath = trueOut
+        else:
+
+            # Calculating direction reference coordinates
+            print("Calculating Positions for angle " + str(a))
+            rad = radians(a)
+            dx = sin(rad)
+            dy = cos(rad)
+
+            x = coilPos[0] + dx
+            y = coilPos[1] + dy
+            z = (-coilPos[0] * (x - coilPos[0]) - coilPos[1] * (y - coilPos[1])) / (coilPos[2]) + coilPos[2] # Equation provided in simulation parameters doc, solved for z
+
+            coilDirRef = [x, y, z]
+            print("Done!")
 
 
-        # SimNIBS code
-        print("\nRunning SimNIBS...")
-        s = sim_struct.SESSION()
+            # SimNIBS code
+            print("\nRunning SimNIBS...")
+            s = sim_struct.SESSION()
 
-        s.subpath = 'm2m_ernie'
+            s.subpath = 'm2m_ernie'
 
-        s.pathfem = 'simNibsOut\\'
+            s.pathfem = 'simNibsOut\\'
 
-        tmslist = s.add_tmslist()
+            tmslist = s.add_tmslist()
 
-        tmslist.fnamecoil = 'Magstim_70mm_Fig8.ccd'
+            tmslist.fnamecoil = 'Magstim_70mm_Fig8.ccd'
 
-        pos = tmslist.add_position()
+            pos = tmslist.add_position()
 
-        pos.centre = coilPos
-        pos.pos_ydir = coilDirRef
+            pos.centre = coilPos
+            pos.pos_ydir = coilDirRef
 
-        run_simnibs(s)
+            run_simnibs(s)
 
-        print("Done!")
+            print("Done!")
+            meshPath = '..\\..\\output_folder\\simNibsOut\\'
 
         # Running file to run neuron and matlab scripts
         print("\nRunning Neuron scripts...")
-        os.system('hocScript.bat')
+        #os.system('hocScript.ps1 ' + meshPath)
+        p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", meshPath], stdout=sys.stdout)
+        p.communicate()
         print("Done!")
 
         print("\nRunning BeNeMo...")
@@ -87,8 +103,8 @@ with open('output.csv', 'w', newline='') as csvfile:
         print("Done!")
 
 
-        outFolder = 'simNibsPastOutput' + str(a)
-
         # Cleanup
         os.rename('simNibsOut', outFolder)
-        shutil.move('outFolder', 'simNibsPastOutputs')
+        shutil.move(outFolder, 'simNibsPastOutputs')
+        for f in glob.glob("results*.txt"): # Globbin time
+            os.remove(f)

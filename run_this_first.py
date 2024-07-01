@@ -80,12 +80,9 @@ with open('Efield_SimNIBS.m','r') as file:
 with open(filevar + r'\output_folder\Efield_SimNIBS.m','w') as file:
         file.writelines(filedata8)
 
-with open('hocScript.bat','r') as file:
+with open('hocScript.ps1','r') as file:
         filedata9 = file.readlines()
-filedata9[5] = 'cd ' + filevar + r'\Code\Neuron'
-filedata9[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
-filedata9[11] = 'cd ' + filevar + r'\output_folder'
-with open(filevar + r'\output_folder\hocScript.bat','w') as file:
+with open(filevar + r'\output_folder\hocScript.ps1','w') as file:
         file.writelines(filedata9)
 
 with open('runAuto.bat','r') as file:
