@@ -6,6 +6,8 @@ from rmtree import rmtree
 import csv
 import shutil
 import glob
+import sys
+import subprocess
 
 # Initializing variables
 # Angles in degrees
@@ -36,11 +38,13 @@ with open('output.csv', 'w', newline='') as csvfile:
     for a in range(initialAngle, finalAngle, step):
 
         outFolder = 'simNibsPastOutput' + str(a)
+        trueOut = 'simNibsPastOutputs\\' + outFolder
 
         # Seeing if output has been created in previous run to save a sweet sweet 60 seconds or so every iteration
-        # i promise it adds up and is well worth the 3 hours i have spent refactoring (maybe)
-        if os.path.exists(outFolder):
-            meshpath = outFolder
+        # i promise it adds up
+        if os.path.exists(trueOut):
+            print("Found pre-existing mesh at " + trueOut)
+            meshpath = trueOut
         else:
 
             # Calculating direction reference coordinates
@@ -49,9 +53,9 @@ with open('output.csv', 'w', newline='') as csvfile:
             dx = sin(rad)
             dy = cos(rad)
 
-            x = -coilPos[0] + dx
+            x = coilPos[0] + dx
             y = coilPos[1] + dy
-            z = (-coilPos[0] * (x + coilPos[0]) + coilPos[1] * (y - coilPos[1])) / (-coilPos[2]) + coilPos[2]
+            z = (-coilPos[0] * (x - coilPos[0]) - coilPos[1] * (y - coilPos[1])) / (coilPos[2]) + coilPos[2] # Equation provided in simulation parameters doc, solved for z
 
             coilDirRef = [x, y, z]
             print("Done!")
@@ -81,7 +85,9 @@ with open('output.csv', 'w', newline='') as csvfile:
 
         # Running file to run neuron and matlab scripts
         print("\nRunning Neuron scripts...")
-        os.system('hocScript.ps1 ' + meshPath)
+        #os.system('hocScript.ps1 ' + meshPath)
+        p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", meshPath], stdout=sys.stdout)
+        p.communicate()
         print("Done!")
 
         print("\nRunning BeNeMo...")
