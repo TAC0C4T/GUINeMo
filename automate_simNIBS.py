@@ -44,7 +44,7 @@ with open('output.csv', 'w', newline='') as csvfile:
         # i promise it adds up
         if os.path.exists(trueOut):
             print("Found pre-existing mesh at " + trueOut)
-            meshpath = trueOut
+            meshPath = trueOut
         else:
 
             # Calculating direction reference coordinates
