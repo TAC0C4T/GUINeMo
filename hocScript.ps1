@@ -17,9 +17,9 @@ nrnfile = 'locs_all_seg.txt';
 % neuron segment coordinates pathway
 nrnpath = '..\..\Results\NEURON\locs\';
 % neuron axis
-nrnaxs = [1  0  0];
+nrnaxs = [0  1  0];
 % neuron desired oriention
-nrnori = [];
+nrnori = [1  0  0];
 % E-field scaling factor
 scale_E = 1;
 % results directory

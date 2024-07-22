@@ -42,22 +42,24 @@ with open('output.csv', 'w', newline='') as csvfile:
 
         # Seeing if output has been created in previous run to save a sweet sweet 60 seconds or so every iteration
         # i promise it adds up
-        if os.path.exists(trueOut):
+        # os.path.exists(trueOut)
+        if 0:
             print("Found pre-existing mesh at " + trueOut)
             meshPath = trueOut + '\\'
         else:
 
             # Calculating direction reference coordinates
             print("Calculating Positions for angle " + str(a))
+            ref = [0, 13.58, -21]
+            normal = [coilPos[i] - ref[i] for i in range(3)]
             rad = radians(a)
             dx = sin(rad)
             dy = cos(rad)
+            xd = coilPos[0] + dx
+            yd = coilPos[1] + dy
+            zd = coilPos[2] + (-normal[0] * (xd - coilPos[0]) - normal[1] * (yd - coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
 
-            x = coilPos[0] + dx
-            y = coilPos[1] + dy
-            z = (-coilPos[0] * (x - coilPos[0]) - coilPos[1] * (y - coilPos[1])) / (coilPos[2]) + coilPos[2] # Equation provided in simulation parameters doc, solved for z
-
-            coilDirRef = [x, y, z]
+            coilDirRef = [xd, yd, zd]
             print("Done!")
 
 
@@ -77,6 +79,7 @@ with open('output.csv', 'w', newline='') as csvfile:
 
             pos.centre = coilPos
             pos.pos_ydir = coilDirRef
+            pos.distance = 2
 
             run_simnibs(s)
 
