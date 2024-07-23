@@ -12,6 +12,9 @@ Unzip the file you get when you download this repository, run the run_this_first
 EACH RUN WILL OVERWRITE THE OUTPUT FILE SO EITHER CHANGE THE NAME OR MOVE IT AFTER EACH RUN.
 At the default of 0degrees - 360degrees at 15degree steps the program takes somewhere in between 6 and 12 hours (not sure of the exact time) to run.
 
+to change orientation and parameters for coupling, along with parameters in the efield calculations you must make those changes in hocscript.ps1.
+to change basic simulation parameters you go in to automate_SimNIBS.py and change variables
+
 
 
 ### Important Notes
