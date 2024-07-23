@@ -43,7 +43,7 @@ with open('output.csv', 'w', newline='') as csvfile:
         # Seeing if output has been created in previous run to save a sweet sweet 60 seconds or so every iteration
         # i promise it adds up
         # os.path.exists(trueOut)
-        if 0:
+        if os.path.exists(trueOut):
             print("Found pre-existing mesh at " + trueOut)
             meshPath = trueOut + '\\'
         else:
@@ -84,7 +84,7 @@ with open('output.csv', 'w', newline='') as csvfile:
             run_simnibs(s)
 
             print("Done!")
-            meshPath = '..\\..\\output_folder\\simNibsOut\\'
+            meshPath = 'simNibsOut\\'
 
         # Running file to run neuron and matlab scripts
         print("\nRunning Neuron scripts...")
@@ -107,7 +107,8 @@ with open('output.csv', 'w', newline='') as csvfile:
 
 
         # Cleanup
-        os.rename('simNibsOut', outFolder)
-        shutil.move(outFolder, 'simNibsPastOutputs')
+        if os.path.exists('simNibsOut\\'):
+            os.rename('simNibsOut', outFolder)
+            shutil.move(outFolder, 'simNibsPastOutputs')
         for f in glob.glob("results*.txt"): # Globbin time
             os.remove(f)
