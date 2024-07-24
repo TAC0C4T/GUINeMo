@@ -9,7 +9,7 @@ meshfile = 'ernie_TMS_1-0001_Magstim_70mm_Fig8_scalar.msh';
 % FEM mesh pathway
 meshpath = '..\..\output_folder\$meshpath';
 % neuron location
-nrnloc = [-46  45  38];
+nrnloc = [-46  45  38];                                          %CHANGE NEURON LOCATION HERE
 % neuron depth
 nrndpth = 1;
 % neuron segment coordinates file name
@@ -19,14 +19,14 @@ nrnpath = '..\..\Results\NEURON\locs\';
 % neuron axis
 nrnaxs = [0  1  0];
 % neuron desired orientation
-nrnori = [1  0  0];
+nrnori = [1  0  0];                                              %Change neuron orientation here
 % E-field scaling factor
 scale_E = 1;
 % results directory
 respath = '..\..\Results\E-field_Coupling';
 "@
 
-# MATLAB script content with modified head_mesh path
+# efield calculation MATLAB script content with modified head_mesh path
 $matlabcontent = @"
 % Simple ROI analysis of the electric field from a simulation.
 % We will calculate the mean electric field in a gray matter ROI
