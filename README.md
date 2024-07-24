@@ -27,7 +27,9 @@ At the default of 0degrees - 360degrees at 15degree steps the program takes some
 to change orientation and parameters for coupling, along with parameters in the efield calculations you must make those changes in hocscript.ps1. \
 to change basic simulation parameters you go in to automate_SimNIBS.py and change variables \
  \
-to skip running benemo just comment out line 97 of automate_simnibs.py
+to skip running benemo just comment out line 97 of automate_simnibs.py \
+
+to run again delete or rename output.csv, change parameters as you wish, then run runauto.bat. runthisfirst only needs to be run once per cell folder
 
 
 
