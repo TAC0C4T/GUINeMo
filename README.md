@@ -8,6 +8,11 @@ ___________________________________________________________________
 
 to begin you must allow powershell script execution. i could not get one of the scripts working as a batch script so i had to use powershell. open powershell as admin and run this command: ```Set-ExecutionPolicy -ExecutionPolicy Unrestricted```
 
+files you need to know the location of:
+cell folder- in your nemotms models folder
+simnibs matlab- Users\(username)\SimNIBS-4.1\matlab_tools     this is the shortcut, double click on it to go to the folder
+m2m_ernie- simnibs4_examples\m2m_ernie    on my machine located in NeMo_research on the c drive
+
 Unzip the file you get when you download this repository, run the run_this_first.py file. The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder, the third is the m2m_ernie folder. After this, navigate to the cell folder and there will be a new folder created called output_folder. run the tms waveform generation step as per the full tutorial for nemo, then run runAuto.bat. to change simulation parameters go to Code\tms_waveform\parameters.txt for neuron location and go to automate simnibs and change the coilPos list to change the coil position and the loop variables to change tested values. Outputs as output.csv with a some (probably) relevant values. 
 EACH RUN WILL OVERWRITE THE OUTPUT FILE SO EITHER CHANGE THE NAME OR MOVE IT AFTER EACH RUN.
 At the default of 0degrees - 360degrees at 15degree steps the program takes somewhere in between 6 and 12 hours (not sure of the exact time) to run.
