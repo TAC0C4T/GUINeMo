@@ -17,7 +17,7 @@ first follow the nemo full tutorial pdf through set 3.2 \
 Unzip the file you get when you download this repository \
 run the run_this_first.py file. \  
 The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder, the third is the m2m_ernie folder. \
-run the tms waveform generation step (3.6 in the full tutorial pdf) as per the full tutorial for nemo in Code\Neuron \
+run the tms waveform generation step (3.6 in the full tutorial pdf) as per the full tutorial for nemo in Code\TMS_waveform \
 navigate to the cell folder and there will be a new folder created called output_folder. \
 run runAuto.bat \
 \
