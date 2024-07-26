@@ -9,7 +9,7 @@ meshfile = 'ernie_TMS_1-0001_Magstim_70mm_Fig8_scalar.msh';
 % FEM mesh pathway
 meshpath = '..\..\output_folder\$meshpath';
 % neuron location
-nrnloc = [-46  45  38];                                          %CHANGE NEURON LOCATION HERE
+nrnloc = [-41.2  71.4  55.3];                                          %CHANGE NEURON LOCATION HERE
 % neuron depth
 nrndpth = 1;
 % neuron segment coordinates file name
