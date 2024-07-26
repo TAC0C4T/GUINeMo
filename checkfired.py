@@ -17,8 +17,8 @@ import datetime
 def checkFired():
     filevar = r"C:/NeMo-TMS-master/Models/15step2"
     tolerance =5#tolerance is a variable that can be changed here. GREATLY affects duration of code
-    low =100
-    high =5000#THIS MUST BE SET HIGHER THAN THE THRESHOLD. I DO NOT KNOW WHAT WILL HAPPEN OTHERWISE
+    low =0
+    high =500#THIS MUST BE SET HIGHER THAN THE THRESHOLD. I DO NOT KNOW WHAT WILL HAPPEN OTHERWISE
     counter =0
     fired=0
     output = []#must declare the list as empty to start the program
