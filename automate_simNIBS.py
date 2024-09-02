@@ -11,7 +11,7 @@ import subprocess
 
 # Initializing variables
 # Angles in degrees
-coilPos = [-41.2, 71.4, 55.3] # Coil position [x, y, z]
+coilPos = [-47.79, 74.76, 58.94] # Coil position [x, y, z]
 initialAngle = 0 # First angle to test
 finalAngle = 360 # End angle (does not check this angle)
 step = 15 # Step value in degrees between each tested angle
