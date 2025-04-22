@@ -1,42 +1,58 @@
 # BeNeMo
 Ben's addition to NeMoTMS software for automation
 
+---
 
-TUTORIAL
-___________________________________________________________________
-## The short version
+## TUTORIAL
 
-to begin you must allow powershell script execution. i could not get one of the scripts working as a batch script so i had to use powershell. open powershell as admin and run this command: ```Set-ExecutionPolicy -ExecutionPolicy Unrestricted```
+### The Short Version
 
-files you need to know the location of: \
-cell folder- in your nemotms models folder \
-simnibs matlab- Users\(username)\SimNIBS-4.1\matlab_tools     this is the shortcut, double click on it to go to the folder \
-m2m_ernie- simnibs4_examples\m2m_ernie    on my machine located in NeMo_research on the c drive \
+To begin, you must allow PowerShell script execution. One of the scripts could not be implemented as a batch script and had to be written in PowerShell. Open PowerShell as Administrator and run:
 
-first follow the nemo full tutorial pdf through set 3.2 \
-Unzip the file you get when you download this repository \
-run the run_this_first.py file. \  
-The first folder select is for your cell folder, the second is for your simNIBS MATLAB folder, the third is the m2m_ernie folder. \
-run the tms waveform generation step (3.6 in the full tutorial pdf) as per the full tutorial for nemo in Code\TMS_waveform \
-navigate to the cell folder and there will be a new folder created called output_folder. \
-run runAuto.bat \
-\
-EACH RUN WILL OVERWRITE THE OUTPUT FILE SO EITHER CHANGE THE NAME OR MOVE IT AFTER EACH RUN.
-At the default of 0degrees - 360degrees at 15degree steps the program takes somewhere in between 6 and 12 hours (not sure of the exact time) to run. \
-\
-to change orientation and parameters for coupling, along with parameters in the efield calculations you must make those changes in hocscript.ps1. \
-to change basic simulation parameters you go in to automate_SimNIBS.py and change variables \
- \
-to skip running benemo just comment out line 97 of automate_simnibs.py \
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+```
 
-to run again delete or rename output.csv, change parameters as you wish, then run runauto.bat. runthisfirst only needs to be run once per cell folder
+### Files You Need to Know the Location Of
 
+- **Cell Folder** – located in your NeMoTMS models folder  
+- **simNIBS MATLAB Folder** – `Users\(username)\SimNIBS-4.1\matlab_tools` (use the shortcut, double-click to open folder)  
+- **m2m_ernie Folder** – `simnibs4_examples\m2m_ernie` (on this machine, it's located in `C:\NeMo_research`)  
 
+### Steps
 
-### Important Notes
+1. Follow the NeMo full tutorial PDF through section 3.2.
+2. Unzip the file you get from this repository.
+3. Run `run_this_first.py`.  
+   - First folder: your **cell** folder  
+   - Second folder: your **simNIBS MATLAB** folder  
+   - Third folder: the **m2m_ernie** folder  
+4. Run the TMS waveform generation step (section 3.6 in the full tutorial) from `Code/TMS_waveform`.
+5. Navigate to the **cell** folder. A new folder called `output_folder` will be created.
+6. Run `runAuto.bat`.
 
-THE LOW VALUE IN checkfired.py MUST BE BELOW THE FIRING THRESHOLD AND THE HIGH VALUE MUST BE ABOVE THE FIRING THRESHOLD. Error checking is a future task for this project and is currently not implemented. If, for instance, you set low to 500, but the threshold is actually 450, the file will run indefinitely until force quit.
+**Each run will overwrite the output file.** Rename or move it after each run.
 
-The parameters.txt file that the script copies to your Code/E-Field_Coupling folder is based off your previous simNIBS simulation output. If you rerun the simNIBS simulation using a different coil, location, or change parameters, you will need to navigate to Results/E-Field_Coupling and copy the parameters.txt located there and move it to Code/E-Field_Coupling.
+- At the default of 0°–360° in 15° steps, the program takes 6–12 hours to run.
 
-If you are planning to use a TMS waveform that is longer than 500us, you will need to modify the timeout amount that is hardcoded into automate_NeMo.bat, on line 24. The default value is 100 which works for waveforms of 500us or less.
+### Changing Parameters
+
+- **Orientation and coupling parameters**: edit `hocscript.ps1`
+- **Basic simulation parameters**: edit `automate_SimNIBS.py`
+- **Pulse width**: edit line 106 of `./Code/TMS_Waveform`
+
+To skip running BeNeMo, comment out line 97 of `automate_SimNIBS.py`.
+
+To run again:
+- Delete or rename `output.csv`
+- Change parameters
+- Run `runAuto.bat` again  
+(`run_this_first.py` only needs to be run once per cell folder)
+
+---
+
+## Important Notes
+
+- The `low` value in `checkfired.py` **must be below** the firing threshold. The `high` value **must be above** it. There is no current error handling — incorrect settings may cause the file to run indefinitely.
+- `parameters.txt` (copied to `Code/E-Field_Coupling`) is based on your previous simNIBS output. If you rerun simNIBS with different coil/location/parameters, copy the updated `parameters.txt` from `Results/E-Field_Coupling` to `Code/E-Field_Coupling`.
+- If using a TMS waveform longer than 500us, update the timeout in `automate_NeMo.bat` (line 24). Default is 100, suitable for ≤500us waveforms.
