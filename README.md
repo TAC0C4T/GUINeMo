@@ -5,7 +5,7 @@ Ben's addition to NeMoTMS software for automation
 
 ## TUTORIAL
 
-### The Short Version
+### Necessary
 
 To begin, you must allow PowerShell script execution. One of the scripts could not be implemented as a batch script and had to be written in PowerShell. Open PowerShell as Administrator and run:
 
