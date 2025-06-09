@@ -15,7 +15,7 @@ import datetime
 #
 #
 def checkFired():
-    filevar = r"C:/NeMo-TMS-master/Models/15step2"
+    filevar = r"C:/NeMo-TMS-master/Models/tsetingagaiiiiinnnnn"
     tolerance =5#tolerance is a variable that can be changed here. GREATLY affects duration of code
     low =0
     high =500#THIS MUST BE SET HIGHER THAN THE THRESHOLD. I DO NOT KNOW WHAT WILL HAPPEN OTHERWISE

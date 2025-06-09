@@ -1,73 +1,73 @@
-function TMS_Waveform()
+function TMS_Waveform(timeStep, desiredPulseWidth, TMS_type, ipi, nump)
 %% Generate TMS pulse trains and write them in a file to be used in the
 % NEURON simulation.
 
 % Receive TMS parameters
-TMS_type = menu('Choose TMS pulse type:','Provided Monophasic Pulse','Generate Custom Monophasic Pulse','Provided Biphasic Pulse','Generate Custom Biphasic Pulse','Generate Custom Rectangular Pulse','Generate Custom 1/9 Boost Pulse','Generate Custom 1/18 Boost Pulse','Load Pulse from File');
-STEP_type = menu('Choose step time (us) :','5','25 (Default)');
+% TMS_type = menu('Choose TMS pulse type:','Provided Monophasic Pulse','Generate Custom Monophasic Pulse','Provided Biphasic Pulse','Generate Custom Biphasic Pulse','Generate Custom Rectangular Pulse','Generate Custom 1/9 Boost Pulse','Generate Custom 1/18 Boost Pulse','Load Pulse from File');
+% STEP_type = menu('Choose step time (us) :','5','25 (Default)');
 
 %%
-prompt = {'\bfEnter the inter-pulse interval in ms:',...
-    '\bf Enter the number of pulses:'};
+% prompt = {'\bfEnter the inter-pulse interval in ms:',...
+%     '\bf Enter the number of pulses:'};
 
-dlgtitle = 'TMS Parameters';
-dims = [1 92];
-opts.Interpreter = 'tex';
-opts.WindowStyle = 'normal';
-definput = {'500','1'};
-while 1
-    answer = inputdlg(prompt,dlgtitle,dims,definput,opts);
-    ipi = str2double(answer{1}); % inter-pulse interval
-    nump = str2double(answer{2}); % number of pulses
-    if ~isnan(ipi) && ~isnan(nump) && ipi>0 && nump>=1
-        break
-    end
-    definput = answer;
-    if isnan(ipi)
-        definput{1} = 'Wrong format!';
-    elseif ipi<=0
-        definput{1} = 'Value should be positive!';
-    end
-    if isnan(nump)
-        definput{2} = 'Wrong format!';
-    elseif nump < 1
-        definput{2} = 'At least one pulse is needed!';
-    end
-end
+% dlgtitle = 'TMS Parameters';
+% dims = [1 92];
+% opts.Interpreter = 'tex';
+% opts.WindowStyle = 'normal';
+% definput = {'500','1'};
+% while 1
+%     %answer = inputdlg(prompt,dlgtitle,dims,definput,opts);
+%     %ipi = str2double(answer{1}); % inter-pulse interval
+%     %nump = str2double(answer{2}); % number of pulses
+%     if ~isnan(ipi) && ~isnan(nump) && ipi>0 && nump>=1
+%         break
+%     end
+%     definput = answer;
+%     if isnan(ipi)
+%         definput{1} = 'Wrong format!';
+%     elseif ipi<=0
+%         definput{1} = 'Value should be positive!';
+%     end
+%     if isnan(nump)
+%         definput{2} = 'Wrong format!';
+%     elseif nump < 1
+%         definput{2} = 'At least one pulse is needed!';
+%     end
+% end
 
-if TMS_type ~= 1 && TMS_type ~= 3 && TMS_type ~= 8  %If it's a custom pulse we need more input!
-    prompt = {'\bfEnter the desired pulse width:',...
-    '\bf another thing maybe?:'};
-    dlgtitle = 'Custom Pulse Parameters';
-    dims = [1 92];
-    opts.Interpreter = 'tex';
-    opts.WindowStyle = 'normal';
-    definput = {'0.15','1'};
+% if TMS_type ~= 1 && TMS_type ~= 3 && TMS_type ~= 8  %If it's a custom pulse we need more input!
+%     prompt = {'\bfEnter the desired pulse width:',...
+%     '\bf another thing maybe?:'};
+%     dlgtitle = 'Custom Pulse Parameters';
+%     dims = [1 92];
+%     opts.Interpreter = 'tex';
+%     opts.WindowStyle = 'normal';
+%     definput = {'0.15','1'};
     
-    while 1
-        answer2 = inputdlg(prompt,dlgtitle,dims,definput,opts);
-        desiredPulseWidth = str2double(answer2{1});
-        mysteryVar = str2double(answer2{2}); 
-        if ~isnan(ipi) && ~isnan(nump) && ipi>0 && nump>=1
-            break
-        end
-        definput = answer2;
-        if isnan(desiredPulseWidth)
-            definput{1} = 'Wrong format!';
-        elseif desiredPulseWidth<0.025
-            definput{1} = 'Pulse width must be greater than 0.025!';
-        elseif desiredPulseWidth>0.5
-            definput{1} = 'Pulse width must be less than 0.5!';
-        end
-        if isnan(mysteryVar)
-            definput{2} = 'Wrong format!';
-        elseif mysteryVar < 1
-            definput{2} = 'At least one pulse is needed!';
-        end
-    end
-end
+%     while 1
+%         answer2 = inputdlg(prompt,dlgtitle,dims,definput,opts);
+%         desiredPulseWidth = str2double(answer2{1});
+%         mysteryVar = str2double(answer2{2}); 
+%         if ~isnan(ipi) && ~isnan(nump) && ipi>0 && nump>=1
+%             break
+%         end
+%         definput = answer2;
+%         if isnan(desiredPulseWidth)
+%             definput{1} = 'Wrong format!';
+%         elseif desiredPulseWidth<0.025
+%             definput{1} = 'Pulse width must be greater than 0.025!';
+%         elseif desiredPulseWidth>0.5
+%             definput{1} = 'Pulse width must be less than 0.5!';
+%         end
+%         if isnan(mysteryVar)
+%             definput{2} = 'Wrong format!';
+%         elseif mysteryVar < 1
+%             definput{2} = 'At least one pulse is needed!';
+%         end
+%     end
+% end
 %% Read TMS single pulse file
-dt = 0.005;
+dt = timeStep;
 if TMS_type == 1
     load(['./original_waveforms' filesep 'TMS_mono.mat']);
     
@@ -169,7 +169,7 @@ elseif TMS_type == 8 %Request user file
 end
 
 %% Generate pulse train
-step = 0.005;
+step = timeStep;
 if length(TMS_E) > round(ipi/dt)
     error('Inter-pulse interval cannot be shorter than TMS pulse duration.');
 end
@@ -187,16 +187,16 @@ train_E = [train_E; TMS_E; zeros(length(train_t)-length(train_E)-length(TMS_E),1
 
 
 %% GRAPHICAL ANALYSIS
-figure
-plot(TMS_t, TMS_E)
-title('Generated Biphasic E-Field Waveform')
+% figure
+% plot(TMS_t, TMS_E)
+% title('Generated Biphasic E-Field Waveform')
 
-figure
-plot(train_t, train_E)
-title('Generated pulse train')
+% figure
+% plot(train_t, train_E)
+% title('Generated pulse train')
 
 %% Downsampling if dt=0.025us
-if STEP_type==2
+if timeStep==0.025
     train_E = train_E(1:5:end);
     train_t = train_t(1:5:end) ; 
     step = 0.025;
@@ -216,5 +216,5 @@ save(['../../Results/TMS_Waveform' filesep 'TMS_E_train.txt'], 'train_E','-ascii
 save(['../../Results/TMS_Waveform' filesep 'TMS_t_train.txt'], 'train_t','-ascii');
 save(['../../Results/TMS_Waveform' filesep 'TMS_timing.txt'], 'timing', '-ascii');
 
-disp('Successfully generated the TMS waveform!');
+% disp('Successfully generated the TMS waveform!');
 end
