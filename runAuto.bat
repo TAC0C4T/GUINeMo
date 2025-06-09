@@ -1,5 +1,5 @@
 @ECHO off
 
-simnibs_python automate_simNIBS.py
+simnibs_python GUINEMO.py
 
 exit /b

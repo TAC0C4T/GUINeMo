@@ -1,5 +1,5 @@
-from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import (
+from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QPushButton,
@@ -37,7 +37,7 @@ class posTimeBox(QDoubleSpinBox):
         self.setSuffix("µs")
 
 class paramSet:
-    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType, neuronPos, neuronOrientation):
+    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, neuronPos, neuronOrientation):
         self.angle = angle
         self.pulseWidth = pulseWidth
         self.pulseLength = pulseLength
@@ -131,9 +131,9 @@ class MainWindow(QMainWindow):
                 str(self.pulseLengthBox.value())
 
             )
-    
-    def runSims(self):
-        data = self.simList.toPlainText()
+
+
+    def objectify(self, data: str) -> list[paramSet]:
         data = data.splitlines()
         data = map(lambda x : x.split("\t"), data)
         
@@ -141,11 +141,110 @@ class MainWindow(QMainWindow):
 
         for list in data:
             simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], None, None))
+        return simParams
 
-        for row in list:
+
+    
+    def runSims(self):
+        data = self.simList.toPlainText()
+        data = self.objectify(data)
+        # Sanity checks. Code may work without this
+        if os.path.isfile('output.csv'):
+            os.remove('output.csv')
+
+        if os.path.exists('simNibsOut\\'):
+            rmtree('simNibsOut\\')
+
+        if not os.path.exists('simNibsPastOutputs'):
+            os.mkdir('simNibsPastOutputs')
+
+        outputs = []
+        for params in data:
+            outputs.append(self.autoNIBSLoop(params, [-47.79, 74.76, 58.94]))
+        for row in outputs:
             print(row)
     
-    def autoNIBSLoop():
+    
+    def autoNIBSLoop(self, params: paramSet, coilPos: tuple[int, int, int]) -> list[str]:
+        outFolder = 'simNibsPastOutput' + str(params.angle)
+        trueOut = 'simNibsPastOutputs\\' + outFolder
+
+        # Seeing if output has been created in previous run to save a sweet sweet 60 seconds or so every iteration
+        # i promise it adds up
+        # os.path.exists(trueOut)
+        if os.path.exists(trueOut):
+            print("Found pre-existing mesh at " + trueOut)
+            meshPath = trueOut + '\\'
+        else:
+
+            # Calculating direction reference coordinates
+            print("Calculating Positions for angle " + str(params.angle))
+            ref = [0, 13.58, -21]
+            normal = [coilPos[i] - ref[i] for i in range(3)]
+            rad = radians(params.angle)
+            dx = sin(rad)
+            dy = cos(rad)
+            xd = coilPos[0] + dx
+            yd = coilPos[1] + dy
+            zd = coilPos[2] + (-normal[0] * (xd - coilPos[0]) - normal[1] * (yd - coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
+
+            coilDirRef = [xd, yd, zd]
+            print("Done!")
+
+
+            # SimNIBS code
+            print("\nRunning SimNIBS...")
+            s = sim_struct.SESSION()
+
+            s.subpath = 'm2m_ernie'
+
+            s.pathfem = 'simNibsOut\\'
+
+            tmslist = s.add_tmslist()
+
+            tmslist.fnamecoil = 'Magstim_70mm_Fig8.ccd'
+
+            pos = tmslist.add_position()
+
+            pos.centre = coilPos
+            pos.pos_ydir = coilDirRef
+            pos.distance = 2
+
+            run_simnibs(s)
+
+            print("Done!")
+            meshPath = 'simNibsOut\\'
+        # Running file to run neuron and matlab scripts
+
+        print("\nRunning Neuron scripts...")
+        if params.pulseType == "Rectangular":
+            pulseShape = 5
+        else:
+            pulseShape = 5
+        subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({.005}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse})\"")
+        #os.system('hocScript.ps1 ' + meshPath)
+        p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", meshPath], stdout=sys.stdout)
+        p.communicate()
+        print("Done!")
+
+        print("\nRunning BeNeMo...")
+        fired = checkFired()
+
+
+        #making csv
+        mean_val= [fired]
+        with open('output.txt') as file:
+            mean_val+= [line.rstrip() for line in file]
+
+        # Cleanup
+        if os.path.exists('simNibsOut\\'):
+            os.rename('simNibsOut', outFolder)
+            shutil.move(outFolder, 'simNibsPastOutputs')
+        for f in glob.glob("results*.txt"): # Globbin time
+            os.remove(f)
+
+        return mean_val
+
 
         
         
