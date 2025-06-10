@@ -90,6 +90,11 @@ with open('runAuto.bat','r') as file:
 with open(filevar + r'\output_folder\runAuto.bat','w') as file:
         file.writelines(filedata10)
 
+with open('GUINEMO.py') as file:
+        filedata11 = file.readlines()
+with open(filevar + r'\output_folder\GUINEMO.py', 'w') as file:
+        file.writelines(filedata11)
+
 shutil.copy('Magstim_70mm_Fig8.ccd', filevar + r'\output_folder')
 
 shutil.copytree(ernievar, filevar + r'\output_folder\m2m_ernie')
@@ -97,6 +102,6 @@ shutil.copytree(ernievar, filevar + r'\output_folder\m2m_ernie')
 shutil.copy('parameters.txt', filevar + r'\Code\E-Field_Coupling')
 
 # This code does not do anything currently and obfuscates the file structure. at some point these "hidden" files should be put into a subfolder for cleanliness instead
-subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
-subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
-subprocess.check_call(["attrib","+H","checkfired.py"])
+#subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
+#subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
+#subprocess.check_call(["attrib","+H","checkfired.py"])

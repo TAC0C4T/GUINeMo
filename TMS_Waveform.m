@@ -1,4 +1,4 @@
-function TMS_Waveform(timeStep, desiredPulseWidth, TMS_type, ipi, nump)
+function TMS_Waveform(timeStep, desiredPulseWidth, TMS_type, ipi, nump, totalTime)
 %% Generate TMS pulse trains and write them in a file to be used in the
 % NEURON simulation.
 
@@ -103,7 +103,7 @@ elseif TMS_type == 4 %Generate a biphasic pulse!
     TMS_E(end) = 0;
     
 elseif TMS_type == 5 %Generate a rectangular pulse!
-    totalTime = 0.3; %Could also request totalTime from user to have a truely variable pulse!
+    %totalTime = totalTime; %Could also request totalTime from user to have a truely variable pulse!
 
     TMS_E = zeros(totalTime/dt+1,1);
     recoveryIntensity = -desiredPulseWidth/(totalTime - desiredPulseWidth);
