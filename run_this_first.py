@@ -65,10 +65,10 @@ with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki w
 with open(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m','w') as file:
     file.writelines(filedata5)
 
-with open('automate_simNIBS.py','r') as file:
-        filedata6 = file.readlines()
-with open(filevar + r'\output_folder\automate_simNIBS.py','w') as file:
-        file.writelines(filedata6)
+# with open('automate_simNIBS.py','r') as file:
+#         filedata6 = file.readlines()
+# with open(filevar + r'\output_folder\automate_simNIBS.py','w') as file:
+#         file.writelines(filedata6)
 
 with open('rmtree.py','r') as file:
         filedata7 = file.readlines()
