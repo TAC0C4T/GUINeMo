@@ -14,11 +14,12 @@ import datetime
 #The results will be saved to the location in line 63 of this file
 #
 #
-def checkFired():
+def checkFired(low: int, high: int, tolerance: int) -> int:
+    
     filevar = r"C:/NeMo-TMS-master/Models/tsetingagaiiiiinnnnn"
-    tolerance =5#tolerance is a variable that can be changed here. GREATLY affects duration of code
+    tolerance =2#tolerance is a variable that can be changed here. GREATLY affects duration of code
     low =0
-    high =500#THIS MUST BE SET HIGHER THAN THE THRESHOLD. I DO NOT KNOW WHAT WILL HAPPEN OTHERWISE
+    high =1000#THIS MUST BE SET HIGHER THAN THE THRESHOLD. I DO NOT KNOW WHAT WILL HAPPEN OTHERWISE
     counter =0
     fired=0
     output = []#must declare the list as empty to start the program

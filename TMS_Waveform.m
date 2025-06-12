@@ -209,12 +209,12 @@ train_E = train_E/max(train_E);
 timing = [ipi;delay_start;nump;step];
 
 %% Save train
-if ~exist('../../Results/TMS_Waveform','dir')
-    mkdir('../../Results/TMS_Waveform');
+if ~exist('../Results/TMS_Waveform','dir')
+    mkdir('../Results/TMS_Waveform');
 end
-save(['../../Results/TMS_Waveform' filesep 'TMS_E_train.txt'], 'train_E','-ascii');
-save(['../../Results/TMS_Waveform' filesep 'TMS_t_train.txt'], 'train_t','-ascii');
-save(['../../Results/TMS_Waveform' filesep 'TMS_timing.txt'], 'timing', '-ascii');
+save(['../Results/TMS_Waveform' filesep 'TMS_E_train.txt'], 'train_E','-ascii');
+save(['../Results/TMS_Waveform' filesep 'TMS_t_train.txt'], 'train_t','-ascii');
+save(['../Results/TMS_Waveform' filesep 'TMS_timing.txt'], 'timing', '-ascii');
 
 % disp('Successfully generated the TMS waveform!');
 end

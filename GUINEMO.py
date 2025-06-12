@@ -42,7 +42,7 @@ class posTimeBox(QDoubleSpinBox):
 
 # Each object of this class is a single simulation
 class paramSet:
-    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, timeStep: float, neuronPos, neuronOrientation):
+    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, timeStep: float, firedLow: int, firedHigh: int, firedTolerance: int, neuronPos, neuronOrientation):
         self.angle = angle
         self.pulseWidth = pulseWidth
         self.pulseLength = pulseLength
@@ -52,6 +52,10 @@ class paramSet:
         self.neuronPos = neuronPos
         self.neuronOrientation = neuronOrientation
         self.timeStep = timeStep
+        self.firedLow = firedLow
+        self.firedHigh = firedHigh
+        self.firedTolerance = firedTolerance
+
 
 # Main window
 class MainWindow(QMainWindow):
@@ -72,6 +76,17 @@ class MainWindow(QMainWindow):
         self.numPulseBox = QSpinBox()
         self.numPulseBox.setMinimum(1)
         self.timeStepBox = posTimeBox()
+        self.timeStepBox.setValue(5)
+        self.lowBox = QSpinBox()
+        self.lowBox.setMinimum(0)
+        self.lowBox.setMaximum(10000)
+        self.highBox = QSpinBox()
+        self.highBox.setMinimum(0)
+        self.highBox.setMaximum(10000)
+        self.highBox.setValue(1000)
+        self.toleranceBox = QSpinBox()
+        self.toleranceBox.setMinimum(0)
+        self.toleranceBox.setValue(2)
 
         self.pulseTypeSelector = QComboBox()
         self.pulseTypeSelector.addItems(["Monophasic", "Biphasic", "Rectangular"])
@@ -100,6 +115,14 @@ class MainWindow(QMainWindow):
         self.inputLayout.addWidget(QLabel("Time Step"))
         self.inputLayout.addWidget(self.timeStepBox)
 
+        self.inputLayout.addWidget(QLabel("Threshold search parameters"))
+        self.inputLayout.addWidget(QLabel("Low"))
+        self.inputLayout.addWidget(self.lowBox)
+        self.inputLayout.addWidget(QLabel("High"))
+        self.inputLayout.addWidget(self.highBox)
+        self.inputLayout.addWidget(QLabel("Tolerance"))
+        self.inputLayout.addWidget(self.toleranceBox)
+
 
         self.addParamButton = QPushButton("Add Sim to Run")
         self.addParamButton.clicked.connect(self.addParams) # Runs function to add the info into the right box
@@ -114,7 +137,7 @@ class MainWindow(QMainWindow):
         self.simList.setAcceptRichText(False) # Disables formatting when copy-pasting
         self.textLayout = QVBoxLayout()
         self.textLayout.addWidget(QLabel("You can copy and paste from excel parameters here!"))
-        #self.textLayout.addWidget(QLabel("Pulse Type\tPulse Width\tFrequency\tIPI\t# Pulses\tAngle\tPulse Length"))
+        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Threshold Tolerance"))
         self.textLayout.addWidget(self.simList)
         self.runButton = QPushButton("Run Simulations")
         self.textLayout.addWidget(self.runButton)
@@ -140,7 +163,10 @@ class MainWindow(QMainWindow):
                 str(self.numPulseBox.value()) + "\t" +
                 str(angle) + "\t" +
                 str(self.pulseLengthBox.value() / 1000) + "\t" +
-                str(self.timeStepBox.value() / 1000)
+                str(self.timeStepBox.value() / 1000) + "\t" +
+                str(self.lowBox.value()) + "\t" +
+                str(self.highBox.value()) + "\t" +
+                str(self.toleranceBox.value())
 
             )
 
@@ -153,7 +179,7 @@ class MainWindow(QMainWindow):
         simParams = []
 
         for list in data:
-            simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], float(list[7]), None, None))
+            simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], float(list[7]), int(list[8]), int(list[9]), int(list[10]), None, None))
         return simParams
     
     # Called by pulseWidthBox
@@ -255,7 +281,7 @@ class MainWindow(QMainWindow):
         print("Done!")
 
         print("\nRunning BeNeMo...")
-        fired = checkFired()
+        fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
 
 
         #making csv
