@@ -23,6 +23,8 @@ import glob
 import sys
 import subprocess
 
+
+# Set up class for angles since they all have the same limits
 class angleBox(QSpinBox):
     def __init__(self):
         super().__init__()
@@ -30,14 +32,17 @@ class angleBox(QSpinBox):
         self.setMaximum(360)
         self.setSuffix("°")
 
+# Set up class for time boxes since they all have the same limits
 class posTimeBox(QDoubleSpinBox):
     def __init__(self):
         super().__init__()
         self.setMinimum(0)
+        self.setMaximum(1000)
         self.setSuffix("µs")
 
+# Each object of this class is a single simulation
 class paramSet:
-    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, neuronPos, neuronOrientation):
+    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, timeStep: float, firedLow: int, firedHigh: int, firedTolerance: int, neuronPos, neuronOrientation):
         self.angle = angle
         self.pulseWidth = pulseWidth
         self.pulseLength = pulseLength
@@ -46,8 +51,13 @@ class paramSet:
         self.pulseType = pulseType
         self.neuronPos = neuronPos
         self.neuronOrientation = neuronOrientation
+        self.timeStep = timeStep
+        self.firedLow = firedLow
+        self.firedHigh = firedHigh
+        self.firedTolerance = firedTolerance
 
 
+# Main window
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -61,9 +71,22 @@ class MainWindow(QMainWindow):
 
         self.pulseWidthBox = posTimeBox()
         self.pulseLengthBox = posTimeBox()
+        self.pulseWidthBox.valueChanged.connect(self.updateLength) # Calls function to set length to 2x width by default
         self.IPIBox = posTimeBox()
         self.numPulseBox = QSpinBox()
         self.numPulseBox.setMinimum(1)
+        self.timeStepBox = posTimeBox()
+        self.timeStepBox.setValue(5)
+        self.lowBox = QSpinBox()
+        self.lowBox.setMinimum(0)
+        self.lowBox.setMaximum(10000)
+        self.highBox = QSpinBox()
+        self.highBox.setMinimum(0)
+        self.highBox.setMaximum(10000)
+        self.highBox.setValue(1000)
+        self.toleranceBox = QSpinBox()
+        self.toleranceBox.setMinimum(0)
+        self.toleranceBox.setValue(2)
 
         self.pulseTypeSelector = QComboBox()
         self.pulseTypeSelector.addItems(["Monophasic", "Biphasic", "Rectangular"])
@@ -89,10 +112,20 @@ class MainWindow(QMainWindow):
         self.inputLayout.addWidget(self.pulseTypeSelector)
         self.inputLayout.addWidget(QLabel("Number of Pulses"))
         self.inputLayout.addWidget(self.numPulseBox)
+        self.inputLayout.addWidget(QLabel("Time Step"))
+        self.inputLayout.addWidget(self.timeStepBox)
+
+        self.inputLayout.addWidget(QLabel("Threshold search parameters"))
+        self.inputLayout.addWidget(QLabel("Low"))
+        self.inputLayout.addWidget(self.lowBox)
+        self.inputLayout.addWidget(QLabel("High"))
+        self.inputLayout.addWidget(self.highBox)
+        self.inputLayout.addWidget(QLabel("Tolerance"))
+        self.inputLayout.addWidget(self.toleranceBox)
 
 
         self.addParamButton = QPushButton("Add Sim to Run")
-        self.addParamButton.clicked.connect(self.addParams)
+        self.addParamButton.clicked.connect(self.addParams) # Runs function to add the info into the right box
         self.inputLayout.addWidget(self.addParamButton)
 
 
@@ -101,14 +134,14 @@ class MainWindow(QMainWindow):
         self.layout = QGridLayout()
 
         self.simList = QTextEdit()
-        self.simList.setAcceptRichText(False)
+        self.simList.setAcceptRichText(False) # Disables formatting when copy-pasting
         self.textLayout = QVBoxLayout()
         self.textLayout.addWidget(QLabel("You can copy and paste from excel parameters here!"))
-        #self.textLayout.addWidget(QLabel("Pulse Type\tPulse Width\tFrequency\tIPI\t# Pulses\tAngle\tPulse Length"))
+        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Threshold Tolerance"))
         self.textLayout.addWidget(self.simList)
         self.runButton = QPushButton("Run Simulations")
         self.textLayout.addWidget(self.runButton)
-        self.runButton.clicked.connect(self.runSims)
+        self.runButton.clicked.connect(self.runSims) # Calls function to run all sims in list
 
 
         self.layout.addLayout(self.inputLayout, 0, 0)
@@ -118,21 +151,27 @@ class MainWindow(QMainWindow):
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
 
+    # Called by addParamButton
     def addParams(self):
         for angle in range(self.angleMinBox.value(), self.angleMaxBox.value() if not self.angleMaxBox.value() <= self.angleMinBox.value() else self.angleMinBox.value() + 1, self.angleStepBox.value() if not self.angleStepBox.value() == 0 else 360):
 
             self.simList.append(
                 self.pulseTypeSelector.currentText() + "\t" +
-                str(self.pulseWidthBox.value()) + "\t" + 
-                str((1 / self.IPIBox.value()) if not self.IPIBox.value() == 0 else 0) + "\t" +
-                str(self.IPIBox.value()) + "\t" +
+                str(self.pulseWidthBox.value() / 1000) + "\t" + 
+                str((1 / (self.IPIBox.value() / 1000)) if not self.IPIBox.value() == 0 else 0) + "\t" +
+                str(self.IPIBox.value() / 1000) + "\t" +
                 str(self.numPulseBox.value()) + "\t" +
                 str(angle) + "\t" +
-                str(self.pulseLengthBox.value())
+                str(self.pulseLengthBox.value() / 1000) + "\t" +
+                str(self.timeStepBox.value() / 1000) + "\t" +
+                str(self.lowBox.value()) + "\t" +
+                str(self.highBox.value()) + "\t" +
+                str(self.toleranceBox.value())
 
             )
 
-
+    # Called by runSims()
+    # Turns text box contents into list of paramSets 
     def objectify(self, data: str) -> list[paramSet]:
         data = data.splitlines()
         data = map(lambda x : x.split("\t"), data)
@@ -140,11 +179,17 @@ class MainWindow(QMainWindow):
         simParams = []
 
         for list in data:
-            simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], None, None))
+            simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], float(list[7]), int(list[8]), int(list[9]), int(list[10]), None, None))
         return simParams
-
-
     
+    # Called by pulseWidthBox
+    # Updates pulseLengthBox to be 2x the width
+    def updateLength(self):
+        self.pulseLengthBox.setValue(self.pulseWidthBox.value() * 2)
+
+
+    # Called by runButton
+    # This is just the BeNeMo
     def runSims(self):
         data = self.simList.toPlainText()
         data = self.objectify(data)
@@ -161,8 +206,13 @@ class MainWindow(QMainWindow):
         outputs = []
         for params in data:
             outputs.append(self.autoNIBSLoop(params, [-47.79, 74.76, 58.94]))
-        for row in outputs:
-            print(row)
+
+        with open('output.csv', 'w', newline='') as csvfile:
+            fieldnames = ['angle', 'fired', 'Mean_ROI', 'E1', 'E2', 'E3', 'MagnE']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in outputs:
+                writer.writerow({'angle': row[0], 'fired': row[1], 'Mean_ROI': row[2], 'E1': row[3], 'E2': row[4], 'E3': row[5], 'MagnE': row[6]})
     
     
     def autoNIBSLoop(self, params: paramSet, coilPos: tuple[int, int, int]) -> list[str]:
@@ -221,18 +271,24 @@ class MainWindow(QMainWindow):
             pulseShape = 5
         else:
             pulseShape = 5
-        subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({.005}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse})\"")
+        
+        #calls TMS_Waveform modified to be a CLI tool
+        subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({params.timeStep}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse}, {params.pulseLength})\"")
+        
         #os.system('hocScript.ps1 ' + meshPath)
         p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", meshPath], stdout=sys.stdout)
         p.communicate()
         print("Done!")
 
         print("\nRunning BeNeMo...")
-        fired = checkFired()
+        print(params.firedLow)
+        print(params.firedHigh)
+        print(params.firedTolerance)
+        fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
 
 
         #making csv
-        mean_val= [fired]
+        mean_val= [params.angle, fired]
         with open('output.txt') as file:
             mean_val+= [line.rstrip() for line in file]
 
@@ -250,7 +306,7 @@ class MainWindow(QMainWindow):
         
 
 
-
+# Runs PyQt
 app = QApplication([])
 
 window = MainWindow()
