@@ -281,6 +281,9 @@ class MainWindow(QMainWindow):
         print("Done!")
 
         print("\nRunning BeNeMo...")
+        print(params.firedLow)
+        print(params.firedHigh)
+        print(params.firedTolerance)
         fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
 
 
