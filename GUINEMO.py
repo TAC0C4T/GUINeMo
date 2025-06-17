@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QWidget,
     QTextEdit,
+    QProgressBar,
 )
 from simnibs import sim_struct, run_simnibs
 from math import sin, cos, radians
@@ -57,6 +58,18 @@ class paramSet:
         self.firedTolerance = firedTolerance
 
 
+# Progress Bar
+class ProgressWindow(QMainWindow):
+    def __init__(self, max: int):
+        super().__init__()
+        self.setWindowTitle("Simulation Progress")
+        self.window = QProgressBar()
+        self.window.setRange(0, max)
+        
+    def setValue(self, value: int):
+        self.window.setValue(value)
+
+
 # Main window
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -90,6 +103,7 @@ class MainWindow(QMainWindow):
 
         self.pulseTypeSelector = QComboBox()
         self.pulseTypeSelector.addItems(["Monophasic", "Biphasic", "Rectangular"])
+
 
 
         self.inputLayout.addWidget(QLabel("Coil Angle Minimum (for only 1 angle put angle in this box, leave others blank)"))
@@ -203,9 +217,15 @@ class MainWindow(QMainWindow):
         if not os.path.exists('simNibsPastOutputs'):
             os.mkdir('simNibsPastOutputs')
 
+        progressBar = ProgressWindow(len(data))
+        progressBar.show()
+
         outputs = []
-        for params in data:
+        for index, params in enumerate(data):
+            progressBar.setValue(index)
             outputs.append(self.autoNIBSLoop(params, [-47.79, 74.76, 58.94]))
+
+        progressBar.hide()
 
         with open('output.csv', 'w', newline='') as csvfile:
             fieldnames = ['angle', 'fired', 'Mean_ROI', 'E1', 'E2', 'E3', 'MagnE']
