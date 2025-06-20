@@ -30,18 +30,12 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 4. Run the TMS waveform generation step (section 3.6 in the full tutorial) from `Code/TMS_waveform`.
 5. Navigate to the **cell** folder. A new folder called `output_folder` will be created.
 6. Run `runAuto.bat`.
+7. Input all necessary options, and click add sim to run, then the run button after all are added.
+   - Can also copy/paste from excel spreadsheet (not yet implemented)
 
 **Each run will overwrite the output file.** Rename or move it after each run.
 
 - At the default of 0°–360° in 15° steps, the program takes 6–12 hours to run.
-
-### Changing Parameters
-
-- **Orientation and coupling parameters**: edit `hocscript.ps1`
-- **Basic simulation parameters**: edit `automate_SimNIBS.py`
-- **Pulse width**: edit line 106 of `./Code/TMS_Waveform`
-
-To skip running BeNeMo, comment out line 97 of `automate_SimNIBS.py`.
 
 To run again:
 - Delete or rename `output.csv`
@@ -52,7 +46,4 @@ To run again:
 ---
 
 ## Important Notes
-
-- The `low` value in `checkfired.py` **must be below** the firing threshold. The `high` value **must be above** it. There is no current error handling — incorrect settings may cause the file to run indefinitely.
-- `parameters.txt` (copied to `Code/E-Field_Coupling`) is based on your previous simNIBS output. If you rerun simNIBS with different coil/location/parameters, copy the updated `parameters.txt` from `Results/E-Field_Coupling` to `Code/E-Field_Coupling`.
 - If using a TMS waveform longer than 500us, update the timeout in `automate_NeMo.bat` (line 24). Default is 100, suitable for ≤500us waveforms.
