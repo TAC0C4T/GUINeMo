@@ -30,8 +30,10 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 4. Run the TMS waveform generation step (section 3.6 in the full tutorial) from `Code/TMS_waveform`.
 5. Navigate to the **cell** folder. A new folder called `output_folder` will be created.
 6. Run `runAuto.bat`.
-7. Input all necessary options, and click add sim to run, then the run button after all are added.
+7. Input all necessary options
    - Can also copy/paste from excel spreadsheet (not yet implemented)
+8. Click add sim to run for each parameter set
+9. Click run button
 
 **Each run will overwrite the output file.** Rename or move it after each run.
 
