@@ -11,6 +11,7 @@ from PyQt5.QtWidgets import (
     QLabel,
     QWidget,
     QTextEdit,
+    QCheckBox,
 )
 from simnibs import sim_struct, run_simnibs
 from math import sin, cos, radians
@@ -40,21 +41,64 @@ class posTimeBox(QDoubleSpinBox):
         self.setMaximum(1000)
         self.setSuffix("µs")
 
+# Set up class for positioning because they all have the same parameters
+class positionBox(QGridLayout):
+    def __init__(self):
+        super().__init__()
+        self.XBox = QDoubleSpinBox()
+        self.XBox.setMinimum(-1000)
+        self.XBox.setMaximum(1000)
+        self.YBox = QDoubleSpinBox()
+        self.YBox.setMinimum(-1000)
+        self.YBox.setMaximum(1000)
+        self.ZBox = QDoubleSpinBox()
+        self.ZBox.setMinimum(-1000)
+        self.ZBox.setMaximum(1000)
+        
+        self.addWidget(QLabel("X"), 0, 0)
+        self.addWidget(QLabel("Y"), 0, 1)
+        self.addWidget(QLabel("Z"), 0, 2)
+        self.addWidget(self.XBox, 1, 0)
+        self.addWidget(self.YBox, 1, 1)
+        self.addWidget(self.ZBox, 1, 2)
+    
+    # Return all values as tuple because "you shouldn't access class variables without a getter method" -🤓
+    # Actually it just makes getting the values shorter to write
+    def getValue(self) -> tuple[int, int, int]:
+        return (self.XBox.value(), self.YBox.value(), self.ZBox.value())
+
+
 # Each object of this class is a single simulation
 class paramSet:
-    def __init__(self, angle: int, pulseWidth: float, pulseLength: float, ipi: float, numPulse: int, pulseType: str, timeStep: float, firedLow: int, firedHigh: int, firedTolerance: int, neuronPos, neuronOrientation):
+    def __init__(self,
+                angle: int, 
+                pulseWidth: float, 
+                pulseLength: float, 
+                ipi: float, 
+                numPulse: int, 
+                pulseType: str, 
+                timeStep: float, 
+                firedLow: int, 
+                firedHigh: int, 
+                firedTolerance: int, 
+                neuronPos: tuple[float, float, float], 
+                neuronOrientation: tuple[float, float, float], 
+                coilPos: tuple[float, float, float], 
+                neuronAxis: tuple[float, float, float]):
         self.angle = angle
         self.pulseWidth = pulseWidth
         self.pulseLength = pulseLength
         self.ipi = ipi
         self.numPulse = numPulse
         self.pulseType = pulseType
-        self.neuronPos = neuronPos
-        self.neuronOrientation = neuronOrientation
+        self.neuronPos = list(neuronPos)
+        self.neuronOrientation = list(neuronOrientation)
+        self.coilPos = coilPos
         self.timeStep = timeStep
         self.firedLow = firedLow
         self.firedHigh = firedHigh
         self.firedTolerance = firedTolerance
+        self.neuronAxis = list(neuronAxis)
 
 
 # Main window
@@ -92,6 +136,40 @@ class MainWindow(QMainWindow):
         self.pulseTypeSelector.addItems(["Monophasic", "Biphasic", "Rectangular"])
 
 
+        self.coilPos = positionBox()
+        defaultCoil = (-47.79, 74.76, 58.94)
+        self.coilPos.XBox.setValue(defaultCoil[0])
+        self.coilPos.YBox.setValue(defaultCoil[1])
+        self.coilPos.ZBox.setValue(defaultCoil[2])
+
+        self.neuronPos = positionBox()
+        defaultPos = (-41.2, 71.4, 55.3)
+        self.neuronPos.XBox.setValue(defaultPos[0])
+        self.neuronPos.YBox.setValue(defaultPos[1])
+        self.neuronPos.ZBox.setValue(defaultPos[2])
+        
+        self.neuronAxis = positionBox()
+        defaultAxs = (0, 1, 0)
+        self.neuronAxis.XBox.setValue(defaultAxs[0])
+        self.neuronAxis.YBox.setValue(defaultAxs[1])
+        self.neuronAxis.ZBox.setValue(defaultAxs[2])
+
+        self.neuronOrientation = positionBox()
+        defaultOrientation = (1, 0, 0)
+        self.neuronOrientation.XBox.setValue(defaultOrientation[0])
+        self.neuronOrientation.YBox.setValue(defaultOrientation[1])
+        self.neuronOrientation.ZBox.setValue(defaultOrientation[2])
+
+
+        self.findThresholdBox = QCheckBox("Find firing threshold (Disable to just generate SimNIBS files)")
+        self.findThresholdBox.setChecked(True)
+
+
+
+
+
+        
+        # Adding elements to GUI
         self.inputLayout.addWidget(QLabel("Coil Angle Minimum (for only 1 angle put angle in this box, leave others blank)"))
         self.inputLayout.addWidget(self.angleMinBox)
         self.inputLayout.addWidget(QLabel("Coil Angle Maximum"))
@@ -124,9 +202,24 @@ class MainWindow(QMainWindow):
         self.inputLayout.addWidget(self.toleranceBox)
 
 
+        self.inputLayout.addWidget(QLabel("Coil Position"))
+        self.inputLayout.addLayout(self.coilPos)
+
+        self.inputLayout.addWidget(QLabel("Neuron Position"))
+        self.inputLayout.addLayout(self.neuronPos)
+
+        self.inputLayout.addWidget(QLabel("Neuron Orientation"))
+        self.inputLayout.addLayout(self.neuronOrientation)
+
+        self.inputLayout.addWidget(QLabel("Neuron Axis"))
+        self.inputLayout.addLayout(self.neuronAxis)
+
+
         self.addParamButton = QPushButton("Add Sim to Run")
         self.addParamButton.clicked.connect(self.addParams) # Runs function to add the info into the right box
         self.inputLayout.addWidget(self.addParamButton)
+        
+        self.inputLayout.addWidget(self.findThresholdBox)
 
 
         
@@ -137,7 +230,7 @@ class MainWindow(QMainWindow):
         self.simList.setAcceptRichText(False) # Disables formatting when copy-pasting
         self.textLayout = QVBoxLayout()
         self.textLayout.addWidget(QLabel("You can copy and paste from excel parameters here!"))
-        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Threshold Tolerance"))
+        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance            Coil Position                    Neuron Position      Neuron Orientation     Neuron Axis"))
         self.textLayout.addWidget(self.simList)
         self.runButton = QPushButton("Run Simulations")
         self.textLayout.addWidget(self.runButton)
@@ -166,7 +259,11 @@ class MainWindow(QMainWindow):
                 str(self.timeStepBox.value() / 1000) + "\t" +
                 str(self.lowBox.value()) + "\t" +
                 str(self.highBox.value()) + "\t" +
-                str(self.toleranceBox.value())
+                str(self.toleranceBox.value()) + "\t" +
+                ','.join(map(str, self.coilPos.getValue())) + "\t" +
+                ','.join(map(str, self.neuronPos.getValue())) + "\t" +
+                ','.join(map(str, self.neuronOrientation.getValue())) + "\t" +
+                ','.join(map(str, self.neuronAxis.getValue()))
 
             )
 
@@ -179,7 +276,21 @@ class MainWindow(QMainWindow):
         simParams = []
 
         for list in data:
-            simParams.append(paramSet(int(list[5]), float(list[1]), float(list[6]), float(list[3]), int(list[4]), list[0], float(list[7]), int(list[8]), int(list[9]), int(list[10]), None, None))
+            simParams.append(paramSet(int(list[5]), 
+                                      float(list[1]), 
+                                      float(list[6]), 
+                                      float(list[3]), 
+                                      int(list[4]), 
+                                      list[0], 
+                                      float(list[7]), 
+                                      int(list[8]), 
+                                      int(list[9]), 
+                                      int(list[10]), 
+                                      map(float, tuple(list[12].split(','))), 
+                                      map(float, tuple(list[13].split(','))), 
+                                      map(float, tuple(list[11].split(','))), 
+                                      map(float, tuple(list[14].split(','))),
+                                      ))
         return simParams
     
     # Called by pulseWidthBox
@@ -189,7 +300,7 @@ class MainWindow(QMainWindow):
 
 
     # Called by runButton
-    # This is just the BeNeMo
+    # This is just the BeNeMo file copy pasted pretty much
     def runSims(self):
         data = self.simList.toPlainText()
         data = self.objectify(data)
@@ -205,7 +316,7 @@ class MainWindow(QMainWindow):
 
         outputs = []
         for params in data:
-            outputs.append(self.autoNIBSLoop(params, [-47.79, 74.76, 58.94]))
+            outputs.append(self.autoNIBSLoop(params))
 
         with open('output.csv', 'w', newline='') as csvfile:
             fieldnames = ['angle', 'fired', 'Mean_ROI', 'E1', 'E2', 'E3', 'MagnE']
@@ -215,7 +326,7 @@ class MainWindow(QMainWindow):
                 writer.writerow({'angle': row[0], 'fired': row[1], 'Mean_ROI': row[2], 'E1': row[3], 'E2': row[4], 'E3': row[5], 'MagnE': row[6]})
     
     
-    def autoNIBSLoop(self, params: paramSet, coilPos: tuple[int, int, int]) -> list[str]:
+    def autoNIBSLoop(self, params: paramSet) -> list[str]:
         outFolder = 'simNibsPastOutput' + str(params.angle)
         trueOut = 'simNibsPastOutputs\\' + outFolder
 
@@ -230,13 +341,13 @@ class MainWindow(QMainWindow):
             # Calculating direction reference coordinates
             print("Calculating Positions for angle " + str(params.angle))
             ref = [0, 13.58, -21]
-            normal = [coilPos[i] - ref[i] for i in range(3)]
+            normal = [params.coilPos[i] - ref[i] for i in range(3)]
             rad = radians(params.angle)
             dx = sin(rad)
             dy = cos(rad)
-            xd = coilPos[0] + dx
-            yd = coilPos[1] + dy
-            zd = coilPos[2] + (-normal[0] * (xd - coilPos[0]) - normal[1] * (yd - coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
+            xd = params.coilPos[0] + dx
+            yd = params.coilPos[1] + dy
+            zd = params.coilPos[2] + (-normal[0] * (xd - params.coilPos[0]) - normal[1] * (yd - params.coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
 
             coilDirRef = [xd, yd, zd]
             print("Done!")
@@ -256,7 +367,7 @@ class MainWindow(QMainWindow):
 
             pos = tmslist.add_position()
 
-            pos.centre = coilPos
+            pos.centre = params.coilPos
             pos.pos_ydir = coilDirRef
             pos.distance = 2
 
@@ -264,33 +375,41 @@ class MainWindow(QMainWindow):
 
             print("Done!")
             meshPath = 'simNibsOut\\'
-        # Running file to run neuron and matlab scripts
-
-        print("\nRunning Neuron scripts...")
-        if params.pulseType == "Rectangular":
-            pulseShape = 5
-        else:
-            pulseShape = 5
         
-        #calls TMS_Waveform modified to be a CLI tool
-        subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({params.timeStep}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse}, {params.pulseLength})\"")
-        
-        #os.system('hocScript.ps1 ' + meshPath)
-        p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", meshPath], stdout=sys.stdout)
-        p.communicate()
-        print("Done!")
 
-        print("\nRunning BeNeMo...")
-        print(params.firedLow)
-        print(params.firedHigh)
-        print(params.firedTolerance)
-        fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
+        if self.findThresholdBox.isChecked():
+            print("Finding Threshold")
+
+            # Running file to run neuron and matlab scripts
+            print("\nRunning Neuron scripts...")
+            if params.pulseType == "Rectangular":
+                pulseShape = 5
+            else:
+                pulseShape = 5
+            
+            #calls TMS_Waveform modified to be a CLI tool
+            subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({params.timeStep}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse}, {params.pulseLength})\"")
+            
+            #os.system('hocScript.ps1 ' + meshPath)
+            nrnloc = f"{params.neuronPos[0]},{params.neuronPos[1]},{params.neuronPos[2]}"
+            nrnaxs = f"{params.neuronAxis[0]},{params.neuronAxis[1]},{params.neuronAxis[2]}"
+            nrnori = f"{params.neuronOrientation[0]},{params.neuronOrientation[1]},{params.neuronOrientation[2]}"
+
+            p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", "-meshpath", meshPath, "-nrnloc", f"{nrnloc} -nrnaxs {nrnaxs} -nrnori {nrnori}"], stdout=sys.stdout)
+            p.communicate()
+            print("Done!")
+
+            print("\nRunning BeNeMo...")
+            print(params.firedLow)
+            print(params.firedHigh)
+            print(params.firedTolerance)
+            fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
 
 
-        #making csv
-        mean_val= [params.angle, fired]
-        with open('output.txt') as file:
-            mean_val+= [line.rstrip() for line in file]
+            #making csv
+            mean_val= [params.angle, fired]
+            with open('output.txt') as file:
+                mean_val+= [line.rstrip() for line in file]
 
         # Cleanup
         if os.path.exists('simNibsOut\\'):

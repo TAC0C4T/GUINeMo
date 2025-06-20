@@ -1,5 +1,8 @@
 param (
-    [string]$meshpath
+    [string]$meshpath,
+    [double[]]$nrnloc,
+    [double[]]$nrnaxs,
+    [double[]]$nrnori
 )
 
 # Define content for parameters.txt
@@ -9,7 +12,7 @@ meshfile = 'ernie_TMS_1-0001_Magstim_70mm_Fig8_scalar.msh';
 % FEM mesh pathway
 meshpath = '..\..\output_folder\$meshpath';
 % neuron location
-nrnloc = [-41.2  71.4  55.3];                                          %CHANGE NEURON LOCATION HERE
+nrnloc = [$(($nrnloc -join ' '))];                                          %CHANGE NEURON LOCATION HERE
 % neuron depth
 nrndpth = 1;
 % neuron segment coordinates file name
@@ -17,9 +20,9 @@ nrnfile = 'locs_all_seg.txt';
 % neuron segment coordinates pathway
 nrnpath = '..\..\Results\NEURON\locs\';
 % neuron axis
-nrnaxs = [0  1  0];
+nrnaxs = [$(($nrnaxs -join ' '))];
 % neuron desired orientation
-nrnori = [1  0  0];                                              %Change neuron orientation here
+nrnori = [$(($nrnori -join ' '))];                                              %Change neuron orientation here
 % E-field scaling factor
 scale_E = 1;
 % results directory
