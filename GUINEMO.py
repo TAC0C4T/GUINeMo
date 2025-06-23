@@ -93,7 +93,7 @@ class paramSet:
         self.pulseType = pulseType
         self.neuronPos = list(neuronPos)
         self.neuronOrientation = list(neuronOrientation)
-        self.coilPos = coilPos
+        self.coilPos = list(coilPos)
         self.timeStep = timeStep
         self.firedLow = firedLow
         self.firedHigh = firedHigh
@@ -402,6 +402,8 @@ class MainWindow(QMainWindow):
             print("Done!")
             meshPath = 'simNibsOut\\'
         
+
+        mean_val = [0, 0, 0, 0, 0, 0, 0]
 
         if self.findThresholdBox.isChecked():
             print("Finding Threshold")
