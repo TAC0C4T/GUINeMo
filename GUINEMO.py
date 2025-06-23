@@ -230,7 +230,7 @@ class MainWindow(QMainWindow):
         self.simList.setAcceptRichText(False) # Disables formatting when copy-pasting
         self.textLayout = QVBoxLayout()
         self.textLayout.addWidget(QLabel("You can copy and paste from excel parameters here!"))
-        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance            Coil Position                    Neuron Position      Neuron Orientation     Neuron Axis"))
+        self.textLayout.addWidget(QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance            Coil Position                    Neuron Position      Neuron Orientation     Neuron Axis      "))
         self.textLayout.addWidget(self.simList)
         self.runButton = QPushButton("Run Simulations")
         self.textLayout.addWidget(self.runButton)
