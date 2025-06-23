@@ -31,9 +31,10 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 5. Navigate to the **cell** folder. A new folder called `output_folder` will be created.
 6. Run `runAuto.bat`.
 7. Input all necessary options
-   - Can also copy/paste from excel spreadsheet (not yet implemented)
+   - Can also copy/paste from excel spreadsheet
 8. Click add sim to run for each parameter set
 9. Click run button
+10. Output will appear in output.csv
 
 **Each run will overwrite the output file.** Rename or move it after each run.
 
