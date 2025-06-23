@@ -319,11 +319,37 @@ class MainWindow(QMainWindow):
             outputs.append(self.autoNIBSLoop(params))
 
         with open('output.csv', 'w', newline='') as csvfile:
-            fieldnames = ['angle', 'fired', 'Mean_ROI', 'E1', 'E2', 'E3', 'MagnE']
+            fieldnames = [
+                'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
+                'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
+                'Threshold Low', 'Threshold High', 'Threshold Tolerance',
+                'Coil Position x,y,z', 'Neuron Position x,y,z',
+                'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
+                'MagnE', 'Firing Threshold'
+            ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for row in outputs:
-                writer.writerow({'angle': row[0], 'fired': row[1], 'Mean_ROI': row[2], 'E1': row[3], 'E2': row[4], 'E3': row[5], 'MagnE': row[6]})
+            
+            for row, params in zip(outputs, data):
+                writer.writerow({
+                    'Pulse Shape': params.pulseType,
+                    'Pulse Width (µs)': params.pulseWidth,
+                    'Frequency (kHz)': 1 / params.ipi,
+                    'Pulse Spacing (µs)': params.ipi,
+                    '# of Pulses': params.numPulse,
+                    'Coil Orientation (°)': params.angle,
+                    'Pulse Length (µs)': params.pulseLength,
+                    'Step Size (µs)': params.timeStep,
+                    'Threshold Low': params.firedLow,
+                    'Threshold High': params.firedHigh,
+                    'Threshold Tolerance': params.firedTolerance,
+                    'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
+                    'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
+                    'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
+                    'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
+                    'MagnE': row[6],
+                    'Firing Threshold': row[1],
+                })
     
     
     def autoNIBSLoop(self, params: paramSet) -> list[str]:
