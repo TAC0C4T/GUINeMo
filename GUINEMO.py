@@ -440,9 +440,10 @@ class MainWindow(QMainWindow):
                 mean_val+= [line.rstrip() for line in file]
 
         # Cleanup
+        os.system("taskkill /f /im gmsh.exe")
         if os.path.exists('simNibsOut\\'):
-            os.rename('simNibsOut', outFolder)
-            shutil.move(outFolder, 'simNibsPastOutputs')
+            #os.rename('simNibsOut', outFolder)
+            shutil.move('simNibsOut', os.path.join('simNibsPastOutputs', outFolder))
         for f in glob.glob("results*.txt"): # Globbin time
             os.remove(f)
 
