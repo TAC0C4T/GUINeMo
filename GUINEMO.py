@@ -86,15 +86,15 @@ class paramSet:
                 coilPos: tuple[float, float, float], 
                 neuronAxis: tuple[float, float, float]):
         self.angle = angle
-        self.pulseWidth = pulseWidth
-        self.pulseLength = pulseLength
-        self.ipi = ipi
+        self.pulseWidth = pulseWidth / 1000
+        self.pulseLength = pulseLength / 1000
+        self.ipi = ipi / 1000
         self.numPulse = numPulse
         self.pulseType = pulseType
         self.neuronPos = list(neuronPos)
         self.neuronOrientation = list(neuronOrientation)
         self.coilPos = list(coilPos)
-        self.timeStep = timeStep
+        self.timeStep = timeStep / 1000
         self.firedLow = firedLow
         self.firedHigh = firedHigh
         self.firedTolerance = firedTolerance
@@ -250,13 +250,13 @@ class MainWindow(QMainWindow):
 
             self.simList.append(
                 self.pulseTypeSelector.currentText() + "\t" +
-                str(self.pulseWidthBox.value() / 1000) + "\t" + 
+                str(self.pulseWidthBox.value()) + "\t" + 
                 str((1 / (self.IPIBox.value() / 1000)) if not self.IPIBox.value() == 0 else 0) + "\t" +
-                str(self.IPIBox.value() / 1000) + "\t" +
+                str(self.IPIBox.value()) + "\t" +
                 str(self.numPulseBox.value()) + "\t" +
                 str(angle) + "\t" +
-                str(self.pulseLengthBox.value() / 1000) + "\t" +
-                str(self.timeStepBox.value() / 1000) + "\t" +
+                str(self.pulseLengthBox.value()) + "\t" +
+                str(self.timeStepBox.value()) + "\t" +
                 str(self.lowBox.value()) + "\t" +
                 str(self.highBox.value()) + "\t" +
                 str(self.toleranceBox.value()) + "\t" +
@@ -325,7 +325,7 @@ class MainWindow(QMainWindow):
                 'Threshold Low', 'Threshold High', 'Threshold Tolerance',
                 'Coil Position x,y,z', 'Neuron Position x,y,z',
                 'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
-                'MagnE', 'Firing Threshold'
+                'MagnE', 'Firing Threshold', 'E1', 'E2', 'E3', 'Mean_ROI',
             ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
@@ -349,6 +349,10 @@ class MainWindow(QMainWindow):
                     'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
                     'MagnE': row[6],
                     'Firing Threshold': row[1],
+                    'E1': row[3],
+                    'E2': row[4],
+                    'E3': row[5],
+                    'Mean_ROI': row[2],
                 })
     
     
@@ -375,7 +379,9 @@ class MainWindow(QMainWindow):
             yd = params.coilPos[1] + dy
             zd = params.coilPos[2] + (-normal[0] * (xd - params.coilPos[0]) - normal[1] * (yd - params.coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
 
+            #xd, yd, zd = -47.43, 76.11, 58.35
             coilDirRef = [xd, yd, zd]
+            print(coilDirRef)
             print("Done!")
 
 
