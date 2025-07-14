@@ -28,7 +28,6 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
    - First folder: your **cell** folder  
    - Second folder: your **simNIBS MATLAB** folder  
    - Third folder: the **m2m_ernie** folder  
-4. Run the TMS waveform generation step (section 3.6 in the full tutorial) from `Code/TMS_waveform`.
 5. Navigate to the **cell** folder. A new folder called `output_folder` will be created.
 6. Run `runAuto.bat`.
 7. Input all necessary options
