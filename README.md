@@ -1,5 +1,6 @@
-# BeNeMo
+# GUINeMo
 Ben's addition to NeMoTMS software for automation
+GUI Version!
 
 ---
 
