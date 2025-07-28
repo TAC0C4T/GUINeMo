@@ -346,6 +346,7 @@ class MainWindow(QMainWindow):
             self.angleMaxLabel.setText("Coil Angle Maximum")
             self.angleStepLabel.setText("Coil Angle Step")
             self.boxLabels.setText("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance            Coil Position                    Neuron Position      Neuron Orientation     Neuron Axis      ")
+            self.findThresholdBox.show()
         if type == 2:
             for element in self.simNIBSInputs:
                 element.hide()
@@ -353,6 +354,7 @@ class MainWindow(QMainWindow):
             self.angleMaxLabel.setText("E-Field Angle Maximum")
             self.angleStepLabel.setText("E-Field Angle Step")
             self.boxLabels.setText("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance")
+            self.findThresholdBox.hide()
 
 
 
@@ -480,8 +482,7 @@ class MainWindow(QMainWindow):
                 fieldnames = [
                     'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
                     'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
-                    'Threshold Low', 'Threshold High', 'Threshold Tolerance',
-                    'MagnE', 'Firing Threshold', 'E1', 'E2', 'E3', 'Mean_ROI',
+                    'Threshold Low', 'Threshold High', 'Threshold Tolerance', 'Firing Threshold',
                 ]
 
 
@@ -528,12 +529,7 @@ class MainWindow(QMainWindow):
                         'Threshold Low': params.firedLow,
                         'Threshold High': params.firedHigh,
                         'Threshold Tolerance': params.firedTolerance,
-                        'MagnE': row[6],
                         'Firing Threshold': row[1],
-                        'E1': row[3],
-                        'E2': row[4],
-                        'E3': row[5],
-                        'Mean_ROI': row[2],
                     })
 
     
@@ -582,8 +578,9 @@ class MainWindow(QMainWindow):
 
     def formatOutput(self, angle: float, fired: int) -> list[str]:
         mean_val = [angle, fired]
-        with open('output.txt') as file:
-                mean_val+= [line.rstrip() for line in file]
+        if self.setSimType == 1:
+            with open('output.txt') as file:
+                    mean_val+= [line.rstrip() for line in file]
         return mean_val
     
     def autoNonNIBSLoop(self, params: paramSet) -> list[str]:
@@ -604,6 +601,18 @@ class MainWindow(QMainWindow):
         x = cos(radians(params.angle))
         y = sin(radians(params.angle))
         z = 0
+
+        paramFile = r'..\Results\Neuron\params.txt'
+
+        #File Sanity Check
+        if (os.path.exists(paramFile)):
+            os.remove (paramFile)
+        
+        if not (os.path.exists(r'..\Results\NEURON')):
+            os.mkdir(r'..\Results\NEURON')
+        
+        shutil.copy('noNibsParams.txt', paramFile)
+
         with open(r"..\Results\Neuron\params.txt", 'r') as file:
             filedata = file.readlines()
         stowrited1 = 'EX ' + str(x) + '\n'
@@ -633,7 +642,7 @@ class MainWindow(QMainWindow):
             meshPath = trueOut + '\\'
         else:
             print(f"Could not find pre-existing mesh, generating at {outFolder}")
-            self.runSimNIBS(self, params)
+            self.runSimNIBS(params)
             meshPath = 'simNibsOut\\'
         
 

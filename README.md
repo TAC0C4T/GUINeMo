@@ -23,7 +23,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 1. Follow the NeMo full tutorial PDF through section 3.2.
 2. Unzip the file you get from this repository.
-3. Run `run_this_first.py`.  
+3. Run `runFirst.bat`.  
    - First folder: your **cell** folder  
    - Second folder: your **simNIBS MATLAB** folder  
    - Third folder: the **m2m_ernie** folder  

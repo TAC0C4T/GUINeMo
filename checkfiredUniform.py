@@ -38,7 +38,7 @@ def checkUniformFired(firedLow, firedHigh, firedTolerance) -> int:
             file.writelines(filedata)
 
         #below is calling the batch file to compile everything
-        subprocess.call(['automate_NeMo.bat'])
+        subprocess.call(['automate_NeMoNoNIBS.bat'])
 
 
         myfile = np.loadtxt(r'..\Results\NEURON\voltage_trace.dat', skiprows = 0)#loading the voltage trace file to check if it fired

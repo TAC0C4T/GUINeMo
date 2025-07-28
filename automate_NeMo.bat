@@ -21,6 +21,7 @@ timeout 30 > nul
 ::The pause command will prompt "press any key to continue..." DO NOT PRESS A KEY
 ::PAUSE is intended to make TMS_script run after GUI_params, otherwise they run at the same time
 TMS_script.hoc
+ECHO script ran
 timeout 100 > nul
 EXIT /b 0
 ::the above line of code exits the batch file, while still running the python file, with exit code 0 (no issues)
