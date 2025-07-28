@@ -14,7 +14,7 @@ import datetime
 #The results will be saved to the location in line 63 of this file
 #
 #
-def checkFired(firedLow, firedHigh, firedTolerance):
+def checkFired(firedLow, firedHigh, firedTolerance) -> int:
     filevar = r"C:/"
     tolerance =firedTolerance#tolerance is a variable that can be changed here. GREATLY affects duration of code
     low =firedLow

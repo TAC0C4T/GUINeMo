@@ -1,0 +1,15 @@
+/***E-field specification**
+E_UNIFORM	1
+TMSAMP 366
+bPolar	0
+/*****Cartesian spec*******
+EX 1.0
+EY 0.0
+EZ 0
+/****Random synaptic parameters***
+SYN_FREQ	3.000000
+SYN_NOISE	0.500000
+SYN_WEIGHT	0.000000
+/****Synchoronous synaptic parameters***
+SYN_WEIGHT_SYNC	0.000000
+TMS_OFFSET	2.000000

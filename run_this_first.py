@@ -58,6 +58,12 @@ filedata4[14] = var1 + matlabvar + var2 + filevar + '/Code/E-Field_Coupling/para
 with open(filevar + r'\output_folder\automate_NeMo.bat','w') as file:
         file.writelines(filedata4)
 
+with open('automate_NeMoNoNIBS.bat','r') as file:
+        filedata40 = file.readlines()
+filedata40[8] = 'cd ' + filevar + r'\Code\E-Field_Coupling'
+with open(filevar + r'\output_folder\automate_NeMoNoNIBS.bat','w') as file:
+        file.writelines(filedata40)
+
 os.remove(filevar + r'\Code\TMS_Waveform\TMS_Waveform.m')#this line removes the original waveform
 
 with open('TMS_Waveform.m', 'r') as file:#will be replaced here by the rudniki waveform
@@ -100,6 +106,10 @@ shutil.copy('Magstim_70mm_Fig8.ccd', filevar + r'\output_folder')
 shutil.copytree(ernievar, filevar + r'\output_folder\m2m_ernie')
 
 shutil.copy('parameters.txt', filevar + r'\Code\E-Field_Coupling')
+
+shutil.copy('checkfiredUniform.py', filevar + r'\output_folder\checkfiredUniform.py')
+
+shutil.copy('noNIBSParams.txt', filevar + r'\output_folder\noNIBSParams.txt')
 
 # This code does not do anything currently and obfuscates the file structure. at some point these "hidden" files should be put into a subfolder for cleanliness instead
 #subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
