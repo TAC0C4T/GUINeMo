@@ -476,7 +476,7 @@ class MainWindow(QMainWindow):
                     'Threshold Low', 'Threshold High', 'Threshold Tolerance',
                     'Coil Position x,y,z', 'Neuron Position x,y,z',
                     'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
-                    'MagnE', 'Firing Threshold', 'E1', 'E2', 'E3', 'Mean_ROI',
+                    'MagnE Normalized', 'Firing Threshold', 'MagnE', 'E1', 'E2', 'E3', 'Mean_ROI',
                 ]
             elif self.setSimType == 2:
                 fieldnames = [
@@ -494,13 +494,13 @@ class MainWindow(QMainWindow):
                 for row, params in zip(outputs, data):
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
-                        'Pulse Width (µs)': params.pulseWidth,
+                        'Pulse Width (µs)': params.pulseWidth * 1000,
                         'Frequency (kHz)': 1 / params.ipi,
-                        'Pulse Spacing (µs)': params.ipi,
+                        'Pulse Spacing (µs)': params.ipi * 1000,
                         '# of Pulses': params.numPulse,
                         'Coil Orientation (°)': params.angle,
-                        'Pulse Length (µs)': params.pulseLength,
-                        'Step Size (µs)': params.timeStep,
+                        'Pulse Length (µs)': params.pulseLength * 1000,
+                        'Step Size (µs)': params.timeStep * 1000,
                         'Threshold Low': params.firedLow,
                         'Threshold High': params.firedHigh,
                         'Threshold Tolerance': params.firedTolerance,
@@ -508,8 +508,9 @@ class MainWindow(QMainWindow):
                         'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
                         'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
                         'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
-                        'MagnE': row[6],
+                        'MagnE Normalized': row[6],
                         'Firing Threshold': row[1],
+                        'MagnE': row[6] * row[1],
                         'E1': row[3],
                         'E2': row[4],
                         'E3': row[5],
@@ -519,13 +520,13 @@ class MainWindow(QMainWindow):
                 for row, params in zip(outputs, data):
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
-                        'Pulse Width (µs)': params.pulseWidth,
+                        'Pulse Width (µs)': params.pulseWidth * 1000,
                         'Frequency (kHz)': 1 / params.ipi,
-                        'Pulse Spacing (µs)': params.ipi,
+                        'Pulse Spacing (µs)': params.ipi * 1000,
                         '# of Pulses': params.numPulse,
                         'Coil Orientation (°)': params.angle,
-                        'Pulse Length (µs)': params.pulseLength,
-                        'Step Size (µs)': params.timeStep,
+                        'Pulse Length (µs)': params.pulseLength * 1000,
+                        'Step Size (µs)': params.timeStep * 1000,
                         'Threshold Low': params.firedLow,
                         'Threshold High': params.firedHigh,
                         'Threshold Tolerance': params.firedTolerance,
