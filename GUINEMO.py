@@ -476,7 +476,7 @@ class MainWindow(QMainWindow):
                     'Threshold Low', 'Threshold High', 'Threshold Tolerance',
                     'Coil Position x,y,z', 'Neuron Position x,y,z',
                     'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
-                    'MagnE Normalized', 'Firing Threshold', 'MagnE', 'E1', 'E2', 'E3', 'Mean_ROI',
+                    'MagnE Normalized', 'Firing Threshold', 'MagnE (V/m)', 'E1', 'E2', 'E3', 'Mean_ROI',
                 ]
             elif self.setSimType == 2:
                 fieldnames = [
@@ -510,7 +510,7 @@ class MainWindow(QMainWindow):
                         'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
                         'MagnE Normalized': row[6],
                         'Firing Threshold': row[1],
-                        'MagnE': row[6] * row[1],
+                        'MagnE (V/m)': row[6] * row[1],
                         'E1': row[3],
                         'E2': row[4],
                         'E3': row[5],
