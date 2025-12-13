@@ -590,8 +590,10 @@ class MainWindow(QMainWindow):
         print("\nRunning Neuron scripts...")
         if params.pulseType == "Rectangular":
             pulseShape = 5
-        else:
-            pulseShape = 5
+        elif params.pulseType == "Biphasic":
+            pulseShape = 4
+        elif params.pulseType == "Monophasic":
+            pulseShape = 2
         
         #calls TMS_Waveform modified to be a CLI tool
         subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({params.timeStep}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse}, {params.pulseLength})\"")
