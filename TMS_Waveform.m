@@ -73,7 +73,7 @@ if TMS_type == 1
     
 elseif TMS_type == 2 %Generate a monophasic pulse!
     desiredPulseLength = desiredPulseWidth/0.1;
-    scalingFactor = 360*0.005/desiredPulseLength;
+    scalingFactor = 360*0.005/totalTime;
 
     monoCurrent = zeros(round(360/scalingFactor),1);
     firstBound = round(50/scalingFactor);
@@ -96,7 +96,7 @@ elseif TMS_type == 3
     load(['./original_waveforms' filesep 'TMS_bi.mat']);
     
 elseif TMS_type == 4 %Generate a biphasic pulse!
-    pulseFrequency = 1/desiredPulseWidth/2;
+    pulseFrequency = 1/ipi;
     TMS_t = (0:dt:(desiredPulseWidth+dt)*2)';
     TMS_E = cos(2*pi*pulseFrequency*(TMS_t-dt));
     TMS_E(1) = 0;
@@ -168,11 +168,24 @@ elseif TMS_type == 8 %Request user file
     
 end
 
-%% Generate pulse train
+% Generate pulse train
 step = timeStep;
 if length(TMS_E) > round(ipi/dt)
     error('Inter-pulse interval cannot be shorter than TMS pulse duration.');
 end
+
+% NEW ERROR CHECK
+% pulse_duration = length(TMS_E) * dt;
+
+% disp('--- DEBUG ---')
+% disp(['length(TMS_E) = ' num2str(length(TMS_E))])
+% disp(['dt = ' num2str(dt)])
+% disp(['pulse_duration (ms) = ' num2str(pulse_duration)])
+% disp(['ipi (ms) = ' num2str(ipi)])
+% disp(['ipi/dt (samples) = ' num2str(ipi/dt)])
+% keyboard
+
+
 delay_start = 40; % delay at the beginning before TMS delivery 40
 delay_end = 40; % delay after the TMS delivery 40
 ipi = round(ipi/dt)*dt;
