@@ -73,7 +73,7 @@ if TMS_type == 1
     
 elseif TMS_type == 2 %Generate a monophasic pulse!
     desiredPulseLength = desiredPulseWidth/0.1;
-    scalingFactor = 360*0.005/totalTime;
+    scalingFactor = 360*0.005/desiredPulseLength;
 
     monoCurrent = zeros(round(360/scalingFactor),1);
     firstBound = round(50/scalingFactor);
@@ -96,7 +96,7 @@ elseif TMS_type == 3
     load(['./original_waveforms' filesep 'TMS_bi.mat']);
     
 elseif TMS_type == 4 %Generate a biphasic pulse!
-    pulseFrequency = 1/ipi;
+    pulseFrequency = 1/desiredPulseWidth/2;
     TMS_t = (0:dt:(desiredPulseWidth+dt)*2)';
     TMS_E = cos(2*pi*pulseFrequency*(TMS_t-dt));
     TMS_E(1) = 0;
