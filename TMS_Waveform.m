@@ -168,24 +168,21 @@ elseif TMS_type == 8 %Request user file
     
 end
 
-% Generate pulse train
+%% Generate pulse train
 step = timeStep;
 if length(TMS_E) > round(ipi/dt)
-    error('Inter-pulse interval cannot be shorter than TMS pulse duration.');
+    disp("ipi");
+    disp(ipi);
+    disp("step");
+    disp(step);
+    disp("totalTime");
+    disp(totalTime);
+    disp("lengthTMSE");
+    disp(length(TMS_E));
+    disp("ROUND(IPI/DT");
+    disp(round(ipi/dt));
+    %error('Inter-pulse interval cannot be shorter than TMS pulse duration.');
 end
-
-% NEW ERROR CHECK
-% pulse_duration = length(TMS_E) * dt;
-
-% disp('--- DEBUG ---')
-% disp(['length(TMS_E) = ' num2str(length(TMS_E))])
-% disp(['dt = ' num2str(dt)])
-% disp(['pulse_duration (ms) = ' num2str(pulse_duration)])
-% disp(['ipi (ms) = ' num2str(ipi)])
-% disp(['ipi/dt (samples) = ' num2str(ipi/dt)])
-% keyboard
-
-
 delay_start = 40; % delay at the beginning before TMS delivery 40
 delay_end = 40; % delay after the TMS delivery 40
 ipi = round(ipi/dt)*dt;
@@ -200,13 +197,13 @@ train_E = [train_E; TMS_E; zeros(length(train_t)-length(train_E)-length(TMS_E),1
 
 
 %% GRAPHICAL ANALYSIS
-% figure
-% plot(TMS_t, TMS_E)
-% title('Generated Biphasic E-Field Waveform')
+ figure
+ plot(TMS_t, TMS_E)
+ title('Generated Biphasic E-Field Waveform')
 
-% figure
-% plot(train_t, train_E)
-% title('Generated pulse train')
+ figure
+ plot(train_t, train_E)
+ title('Generated pulse train')
 
 %% Downsampling if dt=0.025us
 if timeStep==0.025
