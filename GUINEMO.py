@@ -461,6 +461,7 @@ class MainWindow(QMainWindow):
             os.mkdir('simNibsPastOutputs')
 
         outputs = []
+        fieldnames = []
         
 
         with open('output.csv', 'w', newline='') as csvfile:
@@ -483,9 +484,12 @@ class MainWindow(QMainWindow):
 
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            
-            if self.setSimType == 1:
-                for params in data:
+        
+        
+        if self.setSimType == 1:
+            for params in data:
+                with open('output.csv', 'w', newline='') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     output = self.autoNIBSLoop(params)
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
@@ -511,8 +515,10 @@ class MainWindow(QMainWindow):
                         'E3': output[5],
                         'Mean_ROI': output[2],
                     })
-            elif self.setSimType == 2:
-                for params in data:
+        elif self.setSimType == 2:
+            for params in data:
+                with open('output.csv', 'w', newline='') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     output = self.autoNonNIBSLoop(params)
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
