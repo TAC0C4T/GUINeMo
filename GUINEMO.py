@@ -461,12 +461,7 @@ class MainWindow(QMainWindow):
             os.mkdir('simNibsPastOutputs')
 
         outputs = []
-        if self.setSimType == 1:
-            for params in data:
-                outputs.append(self.autoNIBSLoop(params))
-        elif self.setSimType == 2:
-            for params in data:
-                outputs.append(self.autoNonNIBSLoop(params))
+        
 
         with open('output.csv', 'w', newline='') as csvfile:
             if self.setSimType == 1:
@@ -489,9 +484,9 @@ class MainWindow(QMainWindow):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             
-
             if self.setSimType == 1:
-                for row, params in zip(outputs, data):
+                for params in data:
+                    output = self.autoNIBSLoop(params)
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
                         'Pulse Width (µs)': params.pulseWidth * 1000,
@@ -508,16 +503,17 @@ class MainWindow(QMainWindow):
                         'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
                         'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
                         'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
-                        'MagnE Normalized': row[6],
-                        'Firing Threshold': row[1],
-                        'MagnE (V/m)': row[6] * row[1],
-                        'E1': row[3],
-                        'E2': row[4],
-                        'E3': row[5],
-                        'Mean_ROI': row[2],
+                        'MagnE Normalized': output[6],
+                        'Firing Threshold': output[1],
+                        'MagnE (V/m)': output[6] * output[1],
+                        'E1': output[3],
+                        'E2': output[4],
+                        'E3': output[5],
+                        'Mean_ROI': output[2],
                     })
             elif self.setSimType == 2:
-                for row, params in zip(outputs, data):
+                for params in data:
+                    output = self.autoNonNIBSLoop(params)
                     writer.writerow({
                         'Pulse Shape': params.pulseType,
                         'Pulse Width (µs)': params.pulseWidth * 1000,
@@ -530,8 +526,61 @@ class MainWindow(QMainWindow):
                         'Threshold Low': params.firedLow,
                         'Threshold High': params.firedHigh,
                         'Threshold Tolerance': params.firedTolerance,
-                        'Firing Threshold': row[1],
+                        'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
+                        'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
+                        'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
+                        'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
+                        'MagnE Normalized': output[6],
+                        'Firing Threshold': output[1],
+                        'MagnE (V/m)': output[6] * output[1],
+                        'E1': output[3],
+                        'E2': output[4],
+                        'E3': output[5],
+                        'Mean_ROI': output[2],
                     })
+
+            # if self.setSimType == 1:
+            #     for row, params in zip(outputs, data):
+            #         writer.writerow({
+            #             'Pulse Shape': params.pulseType,
+            #             'Pulse Width (µs)': params.pulseWidth * 1000,
+            #             'Frequency (kHz)': 1 / params.ipi,
+            #             'Pulse Spacing (µs)': params.ipi * 1000,
+            #             '# of Pulses': params.numPulse,
+            #             'Coil Orientation (°)': params.angle,
+            #             'Pulse Length (µs)': params.pulseLength * 1000,
+            #             'Step Size (µs)': params.timeStep * 1000,
+            #             'Threshold Low': params.firedLow,
+            #             'Threshold High': params.firedHigh,
+            #             'Threshold Tolerance': params.firedTolerance,
+            #             'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
+            #             'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
+            #             'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
+            #             'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
+            #             'MagnE Normalized': row[6],
+            #             'Firing Threshold': row[1],
+            #             'MagnE (V/m)': row[6] * row[1],
+            #             'E1': row[3],
+            #             'E2': row[4],
+            #             'E3': row[5],
+            #             'Mean_ROI': row[2],
+            #         })
+            # elif self.setSimType == 2:
+            #     for row, params in zip(outputs, data):
+            #         writer.writerow({
+            #             'Pulse Shape': params.pulseType,
+            #             'Pulse Width (µs)': params.pulseWidth * 1000,
+            #             'Frequency (kHz)': 1 / params.ipi,
+            #             'Pulse Spacing (µs)': params.ipi * 1000,
+            #             '# of Pulses': params.numPulse,
+            #             'Coil Orientation (°)': params.angle,
+            #             'Pulse Length (µs)': params.pulseLength * 1000,
+            #             'Step Size (µs)': params.timeStep * 1000,
+            #             'Threshold Low': params.firedLow,
+            #             'Threshold High': params.firedHigh,
+            #             'Threshold Tolerance': params.firedTolerance,
+            #             'Firing Threshold': row[1],
+            #         })
 
     
     # Runs SimNIBS
