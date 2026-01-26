@@ -464,7 +464,7 @@ class MainWindow(QMainWindow):
         fieldnames = []
         
 
-        with open('output.csv', 'w', newline='') as csvfile:
+        with open('output.csv', 'w', newline='', buffering=1) as csvfile:
             if self.setSimType == 1:
                 fieldnames = [
                     'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
@@ -488,7 +488,7 @@ class MainWindow(QMainWindow):
         
         if self.setSimType == 1:
             for params in data:
-                with open('output.csv', 'w', newline='') as csvfile:
+                with open('output.csv', 'w', newline='', buffering=1) as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     output = self.autoNIBSLoop(params)
                     writer.writerow({
@@ -517,7 +517,7 @@ class MainWindow(QMainWindow):
                     })
         elif self.setSimType == 2:
             for params in data:
-                with open('output.csv', 'w', newline='') as csvfile:
+                with open('output.csv', 'w', newline='', buffering=1) as csvfile:
                     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                     output = self.autoNonNIBSLoop(params)
                     writer.writerow({
