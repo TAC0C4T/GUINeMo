@@ -156,6 +156,7 @@ class MainWindow(QMainWindow):
         self.setSimType = 1
         self.setWindowTitle("GUINEMO")
         self.inputLayout = QVBoxLayout()
+        self.setStyleSheet("font-size: 12pt;")
 
         self.angleMinBox = angleBox()
         self.angleMaxBox = angleBox()
