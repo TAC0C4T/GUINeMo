@@ -238,7 +238,7 @@ class SimWorker(QObject):
 
     def formatOutput(self, angle: float, fired: int) -> list[str]: 
         mean_val = [angle, fired]
-        if self.setSimType == 1:
+        if self.simType == 1:
             with open('output.txt') as file:
                     mean_val+= [line.rstrip() for line in file]
         return mean_val
