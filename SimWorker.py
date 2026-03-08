@@ -3,13 +3,20 @@ import os
 from rmtree import rmtree
 import shutil
 import csv
+import subprocess
+from checkfired import checkFired
+from checkfiredUniform import checkUniformFired
+import glob
+from structs import paramSet, paramSetUniform
+from math import cos, sin, radians
+import sys
 
 class SimWorker(QObject):
     finished = pyqtSignal()
     progress = pyqtSignal(str)        # for sending log messages to the UI
     result_ready = pyqtSignal(dict)   # for sending each row's output back to UI
 
-    #TODO OBJECTIFY PARAMS B4 INIT
+
     def __init__(self, data, sim_type, find_threshold): 
         super().__init__()
         self.data = data
@@ -17,104 +24,65 @@ class SimWorker(QObject):
         self.findThreshold = find_threshold
 
     
-    def run(self):                # contains the loop that's currently in runSims()
-
-        data = self.data
-        # Sanity checks. Code may work without this
-        if os.path.isfile('output.csv'):
-            os.remove('output.csv')
-
-        if os.path.exists('simNibsOut\\'):
-            rmtree('simNibsOut\\')
-
-        if not os.path.exists('simNibsPastOutputs'):
-            os.mkdir('simNibsPastOutputs')
-
-        outputs = []
-        fieldnames = []
+    def run(self):
+        for params in self.data:
+            if self.sim_type == 1:
+                output = self.autoNIBSLoop(params)
+                self.result_ready.emit({
+                    'Pulse Shape': params.pulseType,
+                    'Pulse Width (µs)': params.pulseWidth * 1000,
+                    'Frequency (kHz)': 1 / params.ipi,
+                    'Pulse Spacing (µs)': params.ipi * 1000,
+                    '# of Pulses': params.numPulse,
+                    'Coil Orientation (°)': params.angle,
+                    'Pulse Length (µs)': params.pulseLength * 1000,
+                    'Step Size (µs)': params.timeStep * 1000,
+                    'Threshold Low': params.firedLow,
+                    'Threshold High': params.firedHigh,
+                    'Threshold Tolerance': params.firedTolerance,
+                    'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
+                    'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
+                    'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
+                    'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
+                    'MagnE Normalized': output[6],
+                    'Firing Threshold': output[1],
+                    'MagnE (V/m)': output[6] * output[1],
+                    'E1': output[3],
+                    'E2': output[4],
+                    'E3': output[5],
+                    'Mean_ROI': output[2],
+                })
+            elif self.sim_type == 2:
+                output = self.autoNonNIBSLoop(params)
+                self.result_ready.emit({
+                    'Pulse Shape': params.pulseType,
+                    'Pulse Width (µs)': params.pulseWidth * 1000,
+                    'Frequency (kHz)': 1 / params.ipi,
+                    'Pulse Spacing (µs)': params.ipi * 1000,
+                    '# of Pulses': params.numPulse,
+                    'Coil Orientation (°)': params.angle,
+                    'Pulse Length (µs)': params.pulseLength * 1000,
+                    'Step Size (µs)': params.timeStep * 1000,
+                    'Threshold Low': params.firedLow,
+                    'Threshold High': params.firedHigh,
+                    'Threshold Tolerance': params.firedTolerance,
+                    'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
+                    'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
+                    'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
+                    'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
+                    'MagnE Normalized': output[6],
+                    'Firing Threshold': output[1],
+                    'MagnE (V/m)': output[6] * output[1],
+                    'E1': output[3],
+                    'E2': output[4],
+                    'E3': output[5],
+                    'Mean_ROI': output[2],
+                })
         
-
-        with open('output.csv', 'w', newline='', buffering=1) as csvfile:
-            if self.setSimType == 1:
-                fieldnames = [
-                    'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
-                    'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
-                    'Threshold Low', 'Threshold High', 'Threshold Tolerance',
-                    'Coil Position x,y,z', 'Neuron Position x,y,z',
-                    'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
-                    'MagnE Normalized', 'Firing Threshold', 'MagnE (V/m)', 'E1', 'E2', 'E3', 'Mean_ROI',
-                ]
-            elif self.setSimType == 2:
-                fieldnames = [
-                    'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
-                    'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
-                    'Threshold Low', 'Threshold High', 'Threshold Tolerance', 'Firing Threshold',
-                ]
+        self.finished.emit()
 
 
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-        
-        
-        if self.setSimType == 1:
-            for params in data:
-                with open('output.csv', 'w', newline='', buffering=1) as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                    output = self.autoNIBSLoop(params)
-                    writer.writerow({
-                        'Pulse Shape': params.pulseType,
-                        'Pulse Width (µs)': params.pulseWidth * 1000,
-                        'Frequency (kHz)': 1 / params.ipi,
-                        'Pulse Spacing (µs)': params.ipi * 1000,
-                        '# of Pulses': params.numPulse,
-                        'Coil Orientation (°)': params.angle,
-                        'Pulse Length (µs)': params.pulseLength * 1000,
-                        'Step Size (µs)': params.timeStep * 1000,
-                        'Threshold Low': params.firedLow,
-                        'Threshold High': params.firedHigh,
-                        'Threshold Tolerance': params.firedTolerance,
-                        'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
-                        'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
-                        'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
-                        'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
-                        'MagnE Normalized': output[6],
-                        'Firing Threshold': output[1],
-                        'MagnE (V/m)': output[6] * output[1],
-                        'E1': output[3],
-                        'E2': output[4],
-                        'E3': output[5],
-                        'Mean_ROI': output[2],
-                    })
-        elif self.setSimType == 2:
-            for params in data:
-                with open('output.csv', 'w', newline='', buffering=1) as csvfile:
-                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                    output = self.autoNonNIBSLoop(params)
-                    writer.writerow({
-                        'Pulse Shape': params.pulseType,
-                        'Pulse Width (µs)': params.pulseWidth * 1000,
-                        'Frequency (kHz)': 1 / params.ipi,
-                        'Pulse Spacing (µs)': params.ipi * 1000,
-                        '# of Pulses': params.numPulse,
-                        'Coil Orientation (°)': params.angle,
-                        'Pulse Length (µs)': params.pulseLength * 1000,
-                        'Step Size (µs)': params.timeStep * 1000,
-                        'Threshold Low': params.firedLow,
-                        'Threshold High': params.firedHigh,
-                        'Threshold Tolerance': params.firedTolerance,
-                        'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
-                        'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
-                        'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
-                        'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
-                        'MagnE Normalized': output[6],
-                        'Firing Threshold': output[1],
-                        'MagnE (V/m)': output[6] * output[1],
-                        'E1': output[3],
-                        'E2': output[4],
-                        'E3': output[5],
-                        'Mean_ROI': output[2],
-                    })
-    def autoNIBSLoop(self, params): 
+    def autoNIBSLoop(self, params: paramSet) -> list[str]: 
         outFolder = 'simNibsPastOutput' + str(params.angle)
         trueOut = 'simNibsPastOutputs\\' + outFolder
 
@@ -122,21 +90,21 @@ class SimWorker(QObject):
         # i promise it adds up
         # os.path.exists(trueOut)
         if os.path.exists(trueOut):
-            print("Found pre-existing mesh at " + trueOut)
+            self.progress.emit("Found pre-existing mesh at " + trueOut)
             meshPath = trueOut + '\\'
         else:
-            print(f"Could not find pre-existing mesh, generating at {outFolder}")
+            self.progress.emit(f"Could not find pre-existing mesh, generating at {outFolder}")
             self.runSimNIBS(params)
             meshPath = 'simNibsOut\\'
         
 
         mean_val = [0, 0, 0, 0, 0, 0, 0]
 
-        if self.findThresholdBox.isChecked():
-            print("Finding Threshold")
+        if self.findThreshold:
+            self.progress.emit("Finding Threshold")
 
             # Running file to run neuron and matlab scripts
-            print("\nRunning Neuron scripts...")
+            self.progress.emit("\nRunning Neuron scripts...")
             if params.pulseType == "Rectangular":
                 pulseShape = 5
             elif params.pulseType == "Biphasic":
@@ -154,12 +122,12 @@ class SimWorker(QObject):
 
             p = subprocess.Popen(["powershell.exe", os.getcwd() + "\\hocScript.ps1", "-meshpath", meshPath, "-nrnloc", f"{nrnloc} -nrnaxs {nrnaxs} -nrnori {nrnori}"], stdout=sys.stdout)
             p.communicate()
-            print("Done!")
+            self.progress.emit("Done!")
 
-            print("\nRunning BeNeMo...")
-            print(params.firedLow)
-            print(params.firedHigh)
-            print(params.firedTolerance)
+            self.progress.emit("\nRunning BeNeMo...")
+            # print(params.firedLow)
+            # print(params.firedHigh)
+            # print(params.firedTolerance)
             fired = checkFired(params.firedLow, params.firedHigh, params.firedTolerance)
 
 
@@ -175,7 +143,102 @@ class SimWorker(QObject):
             os.remove(f)
 
         return mean_val
-    
-    def autoNonNIBSLoop(self, params): ...
-    def runSimNIBS(self, params): ...
-    def formatOutput(self, angle, fired): ...
+
+
+    def autoNonNIBSLoop(self, params: paramSet) -> list[str]: 
+        self.progress.emit("Finding Threshold")
+        # Running file to run neuron and matlab scripts
+        self.progress.emit("\nRunning Neuron scripts...")
+        if params.pulseType == "Rectangular":
+            pulseShape = 5
+        elif params.pulseType == "Biphasic":
+            pulseShape = 4
+        elif params.pulseType == "Monophasic":
+            pulseShape = 2
+        
+        #calls TMS_Waveform modified to be a CLI tool
+        subprocess.run(f"matlab -batch \"addpath('../Code/TMS_Waveform'); TMS_Waveform({params.timeStep}, {params.pulseWidth}, {pulseShape}, {params.ipi}, {params.numPulse}, {params.pulseLength})\"")
+        self.progress.emit("\nRunning BeNeMo...")
+        # print(params.firedLow)
+        # print(params.firedHigh)
+        # print(params.firedTolerance)
+        x = cos(radians(params.angle))
+        y = sin(radians(params.angle))
+        z = 0
+
+        paramFile = r'..\Results\Neuron\params.txt'
+
+        #File Sanity Check
+        if (os.path.exists(paramFile)):
+            os.remove (paramFile)
+        
+        if not (os.path.exists(r'..\Results\NEURON')):
+            os.mkdir(r'..\Results\NEURON')
+        
+        shutil.copy('noNibsParams.txt', paramFile)
+
+        with open(r"..\Results\Neuron\params.txt", 'r') as file:
+            filedata = file.readlines()
+        stowrited1 = 'EX ' + str(x) + '\n'
+        stowrited2 = 'EY ' + str(y) + '\n'
+        stowrited3 = 'EZ ' + str(z) + '\n'
+        filedata[5] = stowrited1
+        filedata[6] = stowrited2
+        filedata[7] = stowrited3
+        with open(r'..\Results\NEURON\params.txt','w') as file:#writes the new list to the same file
+            file.writelines(filedata)
+        
+        fired = checkUniformFired(params.firedLow, params.firedHigh, params.firedTolerance)
+
+        #making output
+        mean_val = self.formatOutput(params.angle, fired)
+        return mean_val
+
+
+    def runSimNIBS(self, params: paramSet) -> None: 
+         # Calculating direction reference coordinates
+        self.progress.emit("Calculating Positions for angle " + str(params.angle))
+        ref = [0, 13.58, -21]
+        normal = [params.coilPos[i] - ref[i] for i in range(3)]
+        rad = radians(params.angle)
+        dx = sin(rad)
+        dy = cos(rad)
+        xd = params.coilPos[0] + dx
+        yd = params.coilPos[1] + dy
+        zd = params.coilPos[2] + (-normal[0] * (xd - params.coilPos[0]) - normal[1] * (yd - params.coilPos[1])) / normal[2] # Equation provided in simulation parameters doc, solved for z
+
+        #xd, yd, zd = -47.43, 76.11, 58.35
+        coilDirRef = [xd, yd, zd]
+        self.progress.emit(coilDirRef)
+        self.progress.emit("Done!")
+
+
+        # SimNIBS code
+        self.progress.emit("\nRunning SimNIBS...")
+        s = sim_struct.SESSION()
+
+        s.subpath = 'm2m_ernie'
+
+        s.pathfem = 'simNibsOut\\'
+
+        tmslist = s.add_tmslist()
+
+        tmslist.fnamecoil = 'Magstim_70mm_Fig8.ccd'
+
+        pos = tmslist.add_position()
+
+        pos.centre = params.coilPos
+        pos.pos_ydir = coilDirRef
+        pos.distance = 2
+
+        run_simnibs(s)
+
+        self.progress.emit("Done!")
+
+
+    def formatOutput(self, angle: float, fired: int) -> list[str]: 
+        mean_val = [angle, fired]
+        if self.setSimType == 1:
+            with open('output.txt') as file:
+                    mean_val+= [line.rstrip() for line in file]
+        return mean_val

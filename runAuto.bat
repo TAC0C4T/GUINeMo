@@ -1,5 +1,9 @@
 @ECHO off
 
-simnibs_python GUINEMO.py
+set "mode="
+set /p mode=Press Enter to continue or type "l" and enter for legacy mode (single thread)...
 
-exit /b
+IF "%mode%"=="" simnibs_python MultiNeMo.py
+IF "%mode%"=="l" simnibs_python GUINEMO.py
+
+exit

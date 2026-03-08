@@ -111,6 +111,14 @@ shutil.copy('checkfiredUniform.py', filevar + r'\output_folder\checkfiredUniform
 
 shutil.copy('noNIBSParams.txt', filevar + r'\output_folder\noNIBSParams.txt')
 
+shutil.copy('SimWorker.py', filevar + r'\output_folder\SimWorker.py')
+
+shutil.copy('MultiNeMo.py', filevar + r'\output_folder\MultiNemo.py')
+
+shutil.copy('structs.py', filevar + r'\output_folder\structs.py')
+
+shutil.copy('customQTWidgets.py', filevar + r'\output_folder\customQTWidgets.py')
+
 # This code does not do anything currently and obfuscates the file structure. at some point these "hidden" files should be put into a subfolder for cleanliness instead
 #subprocess.check_call(["attrib","+H","automate_NeMo.bat"])#These lines hide the files that are located next to run_this_first
 #subprocess.check_call(["attrib","+H","TMS_Waveform.m"])#This is so someone doesn't accidentally run checkfired from outside the output_folder
