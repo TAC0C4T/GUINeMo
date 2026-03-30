@@ -352,7 +352,25 @@ class MainWindow(QMainWindow):
 
     def onResultReady(self, row):
         with open('output.csv', 'a', newline='', buffering=1) as csvfile:
+            write_header = csvfile.tell() == 0
+            if self.setSimType == 1:
+                self.fieldnames = [
+                    'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
+                    'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
+                    'Threshold Low', 'Threshold High', 'Threshold Tolerance',
+                    'Coil Position x,y,z', 'Neuron Position x,y,z',
+                    'Neuron Orientation x,y,z', 'Neuron Axis x,y,z',
+                    'MagnE Normalized', 'Firing Threshold', 'MagnE (V/m)', 'E1', 'E2', 'E3', 'Mean_ROI',
+                ]
+            elif self.setSimType == 2:
+                self.fieldnames = [
+                    'Pulse Shape', 'Pulse Width (µs)', 'Frequency (kHz)', 'Pulse Spacing (µs)', '# of Pulses',
+                    'Coil Orientation (°)', 'Pulse Length (µs)', 'Step Size (µs)',
+                    'Threshold Low', 'Threshold High', 'Threshold Tolerance', 'Firing Threshold',
+                ]
             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
+            if write_header:
+                writer.writeheader()
             writer.writerow(row)
 
 

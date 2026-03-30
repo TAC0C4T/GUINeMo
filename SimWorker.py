@@ -66,17 +66,7 @@ class SimWorker(QObject):
                     'Threshold Low': params.firedLow,
                     'Threshold High': params.firedHigh,
                     'Threshold Tolerance': params.firedTolerance,
-                    'Coil Position x,y,z': ','.join(map(str, params.coilPos)),
-                    'Neuron Position x,y,z': ','.join(map(str, params.neuronPos)),
-                    'Neuron Orientation x,y,z': ','.join(map(str, params.neuronOrientation)),
-                    'Neuron Axis x,y,z': ','.join(map(str, params.neuronAxis)),
-                    'MagnE Normalized': output[6],
                     'Firing Threshold': output[1],
-                    'MagnE (V/m)': output[6] * output[1],
-                    'E1': output[3],
-                    'E2': output[4],
-                    'E3': output[5],
-                    'Mean_ROI': output[2],
                 })
         
         self.finished.emit()
