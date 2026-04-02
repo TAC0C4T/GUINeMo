@@ -35,7 +35,9 @@ import subprocess
 
 class MainWindow(QMainWindow):
     def __init__(self):
+
         super().__init__()
+        self.totalInQueue = 0
         self.setSimType = 1
         self.setWindowTitle("GUINEMO")
         self.inputLayout = QVBoxLayout()
@@ -171,6 +173,10 @@ class MainWindow(QMainWindow):
             elif isinstance(item, positionBox):
                 self.inputLayout.addLayout(item)
         
+
+        self.queueText = "Sims in Queue: "
+        self.queueLength = QLabel(f"{self.queueText} 0")
+        
         
         
 
@@ -205,6 +211,7 @@ class MainWindow(QMainWindow):
         self.boxLabels = QLabel("Pulse Type           Pulse Width        Frequency          IPI                     # Pulse             Angle                    Pulse Length      Step Size            Threshold Low    Threshold High   Tolerance            Coil Position                    Neuron Position      Neuron Orientation     Neuron Axis      ")
         self.textLayout.addWidget(self.boxLabels)
         self.textLayout.addWidget(self.simList)
+        self.textLayout.addWidget(self.queueLength)
         self.textLayout.addWidget(QLabel("Logs"))
         self.textLayout.addWidget(self.logBox)
         self.runButton = QPushButton("Run Simulations")
@@ -327,6 +334,7 @@ class MainWindow(QMainWindow):
 
     def runSims(self): 
         data = self.objectify(self.simList.toPlainText())
+        self.totalInQueue = self.totalInQueue + len(data)
 
         self.runButton.setEnabled(False)
 
@@ -372,6 +380,9 @@ class MainWindow(QMainWindow):
             if write_header:
                 writer.writeheader()
             writer.writerow(row)
+        self.totalInQueue = self.totalInQueue - 1
+        self.queueLength.setText(f"{self.queueText}{self.totalInQueue}")
+    
 
 
     def onFinished(self):
