@@ -220,6 +220,7 @@ class MainWindow(QMainWindow):
         self.widget = QWidget()
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
+        self.showMaximized()
 
 
     # Called by simType
